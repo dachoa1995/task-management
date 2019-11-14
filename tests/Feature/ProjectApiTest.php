@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -16,14 +17,15 @@ class ProjectApiTest extends TestCase
     private $new_project;
     private $create_project_response;
 
-    protected function setUp(): void {
+    protected function setUp(): void
+    {
         parent::setUp();
 
         // テストユーザー作成
         $this->user = factory(User::class)->create();
 
         $this->header = [
-            'user_id' => $this->user->id,
+            'user_id' => $this->user->google_id,
         ];
 
         // テストプロジェクトを作成
@@ -35,9 +37,14 @@ class ProjectApiTest extends TestCase
     }
 
     /*
-     * 新しいプロジェクトが作成できるか
+     * 新しいプロジェクトを作成の周りのテストです。
+     * 作成したプロジェクトを保存されたかチェック
+     * プロジェクトとユーザーの関係を作成されたか。
+     * サーパーから返したレスポンスの形式があっているか
+     * ユーザーIDがHeaderに含まらないとエラー出るか
      */
-    public function testIfCreateNewProject() {
+    public function testIfCreateNewProject()
+    {
         //作成したプロジェクトを保存されたかチェック
         $project = Project::first();
         $this->assertEquals($this->new_project['name'], $project->name);
@@ -45,7 +52,7 @@ class ProjectApiTest extends TestCase
 
         //プロジェクトとユーザーの関係を作成されたか。
         $projects_users = Projects_users::first();
-        $this->assertEquals($projects_users['user_id'], $this->user->id);
+        $this->assertEquals($projects_users['user_id'], $this->user->google_id);
         $this->assertEquals($projects_users['project_id'], $project->id);
 
         //サーパーから返したレスポンスの形式があっているか
@@ -66,14 +73,18 @@ class ProjectApiTest extends TestCase
     }
 
     /*
+     * プロジェクトを取得の周りのテストです。
      * 自分のプロジェクトを取得できるか
-     * またはプロジェクトを読み込む権限がないと、取得できるのか
+     * サーパーから返したレスポンスの形式があっているか
+     * 存在していないプロジェクトを取得すれば、エラー出るか
+     * 他の人のプロジェクトを取得すれば、エラー出るか
+     * ユーザーIDがHeaderに含まらないとエラー出るか
      */
-    public function testIfAccessProject() {
-        //作成したプロジェクトを保存されたかチェック
+    public function testIfAccessProject()
+    {
         $project = Project::first();
 
-        //プロジェクトを取得
+        //自分のプロジェクトを取得できるか
         $response = $this->json('GET', 'project/' . $project->id, [], $this->header);
 
         //サーパーから返したレスポンスの形式があっているか
@@ -88,20 +99,81 @@ class ProjectApiTest extends TestCase
                 'author_url' => 'https://github.com/dachoa1995'
             ]);
 
-        //存在していないプロジェクトを取得すれば、
+        //存在していないプロジェクトを取得すれば、エラー出るか
         $response = $this->json('GET', 'project/300', [], $this->header);
         $response->assertStatus(404);
 
-        //他の人のプロジェクトを取得すれば、
+        //他の人のプロジェクトを取得すれば、エラー出るか
         $another_user = factory(User::class)->create();
         $header = [
-            'user_id' => $another_user->id,
+            'user_id' => $another_user->google_id,
         ];
         $response = $this->json('GET', 'project/' . $project->id, [], $header);
         $response->assertStatus(403);
 
-        //ユーザーIDがHeaderに含まらないとエラー
+        //ユーザーIDがHeaderに含まらないとエラー出るか
         $response = $this->json('GET', 'project/' . $project->id, [], []);
+        $response->assertStatus(401);
+    }
+
+    /*
+     * プロジェクトを修正の周りのテストです。
+     * 自分のプロジェクトを編集できるか
+     * サーパーから返したレスポンスの形式があっているか
+     * プロジェクトは編集されたか
+     * 存在していないプロジェクトを編集すれば、エラー出るか
+     * 他の人のプロジェクトを編集すれば、エラー出るか
+     * ユーザーIDがHeaderに含まらないとエラー出るか
+     */
+    public function testIfChangeProject()
+    {
+        $project = Project::first();
+
+        //自分のプロジェクトを編集できるか
+        $query = [
+            'project_id' => $project->id,
+            'name' => 'new name',
+            'description' => 'new description',
+        ];
+        $response = $this->json('PUT', 'project', [], $this->header);
+
+        //サーパーから返したレスポンスの形式があっているか
+        $response
+            ->assertStatus(201)
+            ->assertJson([
+                'data' => [
+                    'name' => $query['name'],
+                    'description' => $query['description']
+                ],
+                'version' => '1.0.0',
+                'author_url' => 'https://github.com/dachoa1995'
+            ]);
+
+        //プロジェクトは編集されたか
+        $project = Project::first();
+        $this->assertEquals($query['name'], $project->name);
+        $this->assertEquals($query['description'], $project->description);
+
+        //存在していないプロジェクトを編集すれば、エラー出るか
+        $strange_query = [
+            'project_id' => '300',
+            'name' => 'new name',
+            'description' => 'new description',
+        ];
+
+        $response = $this->json('PUT', 'project', $strange_query, $this->header);
+        $response->assertStatus(404);
+
+        //他の人のプロジェクトを編集すれば、エラー出るか
+        $another_user = factory(User::class)->create();
+        $header = [
+            'user_id' => $another_user->google_id,
+        ];
+        $response = $this->json('PUT', 'project', $query, $header);
+        $response->assertStatus(403);
+
+        //ユーザーIDがHeaderに含まらないとエラー出るか
+        $response = $this->json('PUT', 'project', $query, []);
         $response->assertStatus(401);
     }
 }

@@ -176,4 +176,132 @@ class ProjectApiTest extends TestCase
         $response = $this->json('PUT', 'project', $query, []);
         $response->assertStatus(401);
     }
+
+    /*
+     * 自分のプロジェクトに担当者アサインの周りのテストです
+     * サーパーから返したレスポンスの形式があっているか
+     * プロジェクトとユーザーの関係を作成されたか
+     * アサインされた担当者はプロジェクトをアクセスできるか
+     * アサインされた担当者はプロジェクトを編集できるか
+     * ユーザーIDがHeaderに含まらないとエラー出るか
+     * 存在していないプロジェクトに担当者アサインできるか
+     */
+    public function testIfAssignToProject() {
+        $project = Project::first();
+        //他のユーザーテスト作成
+        $another_user = factory(User::class)->create();
+
+        //プロジェクトに担当者アサインする
+        $header = [
+            'user_id' => $this->user->google_id,
+            'assign_to_user_id' => $another_user->google_id
+        ];
+        $response = $this->json('GET', 'assign_project/' . $project->id, [], $header);
+
+        //サーパーから返したレスポンスの形式があっているか
+        $response
+            ->assertStatus(201)
+            ->assertJson([
+                'data' => [],
+                'version' => '1.0.0',
+                'author_url' => 'https://github.com/dachoa1995'
+            ]);
+
+        //存在していないプロジェクトに担当者アサインできるか
+        $response = $this->json('GET', 'assign_project/300', [], $header);
+        $response->assertStatus(404);
+
+        //プロジェクトとユーザーの関係を作成されたか
+        $projects_users = Projects_users::first();
+        $this->assertEquals($projects_users['user_id'], $another_user->google_id);
+        $this->assertEquals($projects_users['project_id'], $project->id);
+
+        //アサインされた担当者はプロジェクトを取得できるか
+        $header = [
+            'user_id' => $another_user->google_id,
+        ];
+        $response = $this->json('GET', 'project/' . $project->id, [], $header);
+
+        $response
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'name' => $project->name,
+                    'description' => $project->description
+                ],
+                'version' => '1.0.0',
+                'author_url' => 'https://github.com/dachoa1995'
+            ]);
+
+        //アサインされた担当者はプロジェクトを編集できるか
+        $query = [
+            'project_id' => $project->id,
+            'name' => 'new name',
+            'description' => 'new description',
+        ];
+        $response = $this->json('PUT', 'project', $query, $header);
+
+        $response
+            ->assertStatus(201)
+            ->assertJson([
+                'data' => [
+                    'name' => $query['name'],
+                    'description' => $query['description']
+                ],
+                'version' => '1.0.0',
+                'author_url' => 'https://github.com/dachoa1995'
+            ]);
+
+        $project = Project::first();
+        $this->assertEquals($query['name'], $project->name);
+        $this->assertEquals($query['description'], $project->description);
+
+        //ユーザーIDがHeaderに含まらないとエラー出るか
+        $response = $this->json('GET', 'assign_project/' . $project->id, [], []);
+        $response->assertStatus(401);
+    }
+
+    /*
+     * プロジェクト削除の周りのテストです
+     * 権限がないユーザーが削除できるか
+     * 存在していないプロジェクトを削除できるか
+     * 自分のプロジェクトを削除できるか
+     * サーパーから返したレスポンスの形式があっているか
+     * プロジェクトはデーターベースで削除されたか
+     */
+    public function testIfDeleteProject() {
+        $project = Project::first();
+        //他のユーザーテスト作成
+        $another_user = factory(User::class)->create();
+
+        //権限がないユーザーが削除できるか
+        $header = [
+            'user_id' => $another_user->google_id,
+        ];
+        $response = $this->json('DELETE', 'project/' . $project->id, [], $header);
+        $response->assertStatus(403);
+
+        //存在していないプロジェクトを削除できるか
+        $response = $this->json('DELETE', 'project/300', [], $this->header);
+        $response->assertStatus(404);
+
+        // 自分のプロジェクトを削除できるか。
+        $response = $this->json('DELETE', 'project/' . $project->id, [], $this->header);
+
+        //サーパーから返したレスポンスの形式があっているか
+        $response
+            ->assertStatus(201)
+            ->assertJson([
+                'data' => [],
+                'version' => '1.0.0',
+                'author_url' => 'https://github.com/dachoa1995'
+            ]);
+
+        //プロジェクトはデーターベースで削除されたか
+        $project = Project::first();
+        $this->assertEquals($project, null);
+
+        $projects_users = Projects_users::first();
+        $this->assertEquals($projects_users, null);
+    }
 }

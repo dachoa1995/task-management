@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Project;
 use App\ProjectsUsers;
 use App\Http\Resources\Project as ProjectResource;
+use App\Http\Resources\ProjectList as ProjectList;
 use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
@@ -17,10 +18,12 @@ class ProjectController extends Controller
     public function index()
     {
         // get projects
-        $projects = Project::paginate(10);
+        $projects = projectsUsers::with(['project'])
+            ->where('user_id', '=', Auth::id())
+            ->paginate(10);
 
         // return collection of projects as a resource
-        return ProjectResource::collection($projects);
+        return ProjectList::collection($projects);
     }
 
     /**

@@ -186,7 +186,8 @@ class ProjectApiTest extends TestCase
      * 存在していないプロジェクトに担当者アサインできるか
      */
 
-    public function testIfAssignToProject() {
+    public function testIfAssignToProject()
+    {
         //他のユーザーテスト作成
         $another_user = factory(User::class)->create();
 
@@ -263,7 +264,8 @@ class ProjectApiTest extends TestCase
      * サーパーから返したレスポンスの形式があっているか
      * プロジェクトはデーターベースで削除されたか
     */
-    public function testIfDeleteProject() {
+    public function testIfDeleteProject()
+    {
         $header = [
             'Authorization' => 'Bearer ' . $this->user->api_token,
             'Accept' => 'application/json',
@@ -288,13 +290,85 @@ class ProjectApiTest extends TestCase
     }
 
     /*
+     * プロジェクト一覧を取得の周りのテストです。
+     */
+    public function testIfGetListProject()
+    {
+        //他のユーザーのプロジェクト作成
+        // テストユーザー作成
+        $another_user = factory(User::class)->create();
+
+        // テストプロジェクトを作成
+        $project = factory(Project::class)->create();
+
+        //プロジェクトとユーザーの関係を作成
+        $project_user = new ProjectsUsers();
+        $project_user->user_id = $another_user->id;
+        $project_user->project_id = $project->id;
+        $project_user->save();
+
+
+
+        // 自分のテストプロジェクトを作成
+        $project2 = factory(Project::class)->create();
+
+        //プロジェクトとユーザーの関係を作成
+        $project_user = new ProjectsUsers();
+        $project_user->user_id = $this->user->id;
+        $project_user->project_id = $project2->id;
+        $project_user->save();
+
+        // api_tokenがHeaderに含まらないとエラー出るか
+        $header = [];
+        $response = $this->json('GET', '/api/projects', [], $header);
+        $response->assertStatus(401);
+
+        // 自分のプロジェクト一覧取得
+        $header = [
+            'Authorization' => 'Bearer ' . $this->user->api_token,
+            'Accept' => 'application/json',
+        ];
+        $response = $this->json('GET', '/api/projects', [], $header);
+        $response
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    [
+                        'id' => $this->project->id,
+                        'name' => $this->project->name,
+                        'description' => $this->project->description
+                    ],
+                    [
+                        'id' => $project2->id,
+                        'name' => $project2->name,
+                        'description' => $project2->description
+                    ]
+                ],
+                'links' => [
+                    'first' => 'http://localhost/api/projects?page=1',
+                    'last' => 'http://localhost/api/projects?page=1',
+                    'prev' => null,
+                    'next' => null
+                ],
+                'meta' => [
+                    'current_page' => 1,
+                    'from' => 1,
+                    'last_page' => 1,
+                    'path' => 'http://localhost/api/projects',
+                    'per_page' => 10
+                ]
+            ]);
+    }
+
+    /*
      * 権限がないアクセスの周りのテストです。
      * 他の人のプロジェクトを取得すれば、エラー出るか
      * 他の人のプロジェクトを編集すれば、エラー出るか
      * 他の人のプロジェクトを削除すれば、エラー出るか
      * 他の人のプロジェクトを担当者アサインすれば、エラー出るか
      */
-    public function testIfAccessWithoutAuth() {
+    public function testIfAccessWithoutAuth()
+    {
         //他の人のプロジェクトを取得すれば、エラー出るか
         $another_user = factory(User::class)->create();
         $header = [

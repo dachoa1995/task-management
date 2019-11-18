@@ -14,4 +14,9 @@ class Project extends Model
     protected $fillable = [
         'name', 'description'
     ];
+
+    public function projectsUsers()
+    {
+        return $this->hasMany('App\ProjectsUsers');
+    }
 }

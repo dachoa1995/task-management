@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'google_id', 'email', 'name', 'avatarURL'
+        'api_token', 'email', 'name', 'avatarURL'
     ];
 
     /**
@@ -36,4 +36,9 @@ class User extends Authenticatable
     protected $casts = [
 
     ];
+
+    public function projectsUsers()
+    {
+        return $this->hasMany('App\ProjectsUsers');
+    }
 }

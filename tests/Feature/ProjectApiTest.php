@@ -7,15 +7,13 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Project;
 use App\User;
-use App\Projects_users;
+use App\ProjectsUsers;
 
 class ProjectApiTest extends TestCase
 {
     use RefreshDatabase;
     private $user;
-    private $header;
-    private $new_project;
-    private $create_project_response;
+    private $project;
 
     protected function setUp(): void
     {
@@ -24,39 +22,56 @@ class ProjectApiTest extends TestCase
         // テストユーザー作成
         $this->user = factory(User::class)->create();
 
-        $this->header = [
-            'user_id' => $this->user->google_id,
-        ];
-
         // テストプロジェクトを作成
-        $this->new_project = [
-            'name' => 'タスク管理システム',
-            'description' => 'laravel + vue.jsで開発を行なっている',
-        ];
-        $this->create_project_response = $this->json('POST', route('CreateProject'), $this->new_project, $this->header);
+        $this->project = factory(Project::class)->create();
+
+        //プロジェクトとユーザーの関係を作成
+        $project_user = new ProjectsUsers();
+        $project_user->user_id = $this->user->id;
+        $project_user->project_id = $this->project->id;
+        $project_user->save();
     }
 
     /*
      * 新しいプロジェクトを作成の周りのテストです。
+     * api_tokenがHeaderに含まらないとエラー
      * 作成したプロジェクトを保存されたかチェック
      * プロジェクトとユーザーの関係を作成されたか。
      * サーパーから返したレスポンスの形式があっているか
-     * ユーザーIDがHeaderに含まらないとエラー出るか
      */
     public function testIfCreateNewProject()
     {
+        // テストプロジェクトを作成
+        $new_project = [
+            'name' => 'タスク管理システム',
+            'description' => 'laravel + vue.jsで開発を行なっている',
+        ];
+
+        //api_tokenがHeaderに含まらないとエラー
+        $header = [];
+        $response = $this->json('POST', '/api/project', $new_project, $header);
+        $response->assertStatus(401);
+
+        //新しいプロジェクトを作成というリクエストを送る
+        $header = [
+            'Authorization' => 'Bearer ' . $this->user->api_token,
+            'Accept' => 'application/json',
+        ];
+
+        $response = $this->json('POST', '/api/project', $new_project, $header);
+
         //作成したプロジェクトを保存されたかチェック
-        $project = Project::first();
-        $this->assertEquals($this->new_project['name'], $project->name);
-        $this->assertEquals($this->new_project['description'], $project->description);
+        $project = Project::all()->last();
+        $this->assertEquals($new_project['name'], $project->name);
+        $this->assertEquals($new_project['description'], $project->description);
 
         //プロジェクトとユーザーの関係を作成されたか。
-        $projects_users = Projects_users::first();
-        $this->assertEquals($projects_users['user_id'], $this->user->google_id);
+        $projects_users = ProjectsUsers::all()->last();
+        $this->assertEquals($projects_users['user_id'], $this->user->id);
         $this->assertEquals($projects_users['project_id'], $project->id);
 
         //サーパーから返したレスポンスの形式があっているか
-        $this->create_project_response
+        $response
             ->assertStatus(201)
             ->assertJson([
                 'data' => [
@@ -66,80 +81,106 @@ class ProjectApiTest extends TestCase
                 'version' => '1.0.0',
                 'author_url' => 'https://github.com/dachoa1995'
             ]);
-
-        //ユーザーIDがHeaderに含まらないとエラー
-        $response = $this->json('POST', route('CreateProject'), $this->new_project, []);
-        $response->assertStatus(401);
     }
 
     /*
      * プロジェクトを取得の周りのテストです。
+     * api_tokenがHeaderに含まらないとエラー
      * 自分のプロジェクトを取得できるか
      * サーパーから返したレスポンスの形式があっているか
      * 存在していないプロジェクトを取得すれば、エラー出るか
-     * 他の人のプロジェクトを取得すれば、エラー出るか
-     * ユーザーIDがHeaderに含まらないとエラー出るか
-     */
+    */
     public function testIfAccessProject()
     {
-        $project = Project::first();
+        $header = [];
+        //api_tokenがHeaderに含まらないとエラー
+        $response = $this->json('GET', '/api/project/' . $this->project->id, [], $header);
+        $response->assertStatus(401);
 
         //自分のプロジェクトを取得できるか
-        $response = $this->json('GET', 'project/' . $project->id, [], $this->header);
+        $header = [
+            'Authorization' => 'Bearer ' . $this->user->api_token,
+            'Accept' => 'application/json',
+        ];
+        $response = $this->json('GET', '/api/project/' . $this->project->id, [], $header);
 
         //サーパーから返したレスポンスの形式があっているか
         $response
             ->assertStatus(200)
             ->assertJson([
                 'data' => [
-                    'name' => $project->name,
-                    'description' => $project->description
+                    'name' => $this->project->name,
+                    'description' => $this->project->description
                 ],
                 'version' => '1.0.0',
                 'author_url' => 'https://github.com/dachoa1995'
             ]);
 
         //存在していないプロジェクトを取得すれば、エラー出るか
-        $response = $this->json('GET', 'project/300', [], $this->header);
-        $response->assertStatus(404);
+        $response = $this->json('GET', '/api/project/300', [], $header);
+        $response->assertStatus(403);
+    }
 
+    /*
+     * 権限がないアクセスの周りのテストです。
+     * 他の人のプロジェクトを取得すれば、エラー出るか
+     * 他の人のプロジェクトを編集すれば、エラー出るか
+     * 他の人のプロジェクトを削除すれば、エラー出るか
+     */
+    public function testIfAccessWithoutAuth() {
         //他の人のプロジェクトを取得すれば、エラー出るか
         $another_user = factory(User::class)->create();
         $header = [
-            'user_id' => $another_user->google_id,
+            'Authorization' => 'Bearer ' . $another_user->api_token,
+            'Accept' => 'application/json',
         ];
-        $response = $this->json('GET', 'project/' . $project->id, [], $header);
+        $response = $this->json('GET', '/api/project/' . $this->project->id, [], $header);
         $response->assertStatus(403);
 
-        //ユーザーIDがHeaderに含まらないとエラー出るか
-        $response = $this->json('GET', 'project/' . $project->id, [], []);
-        $response->assertStatus(401);
+        //他の人のプロジェクトを編集すれば、エラー出るか
+        $query = [
+            'project_id' => $this->project->id,
+            'name' => 'new name',
+            'description' => 'new description',
+        ];
+        $response = $this->json('PUT', '/api/project', $query, $header);
+        $response->assertStatus(403);
+
+        //他の人のプロジェクトを削除すれば、エラー出るか
+        $response = $this->json('DELETE', '/api/project/' . $this->project->id, [], $header);
+        $response->assertStatus(403);
     }
 
     /*
      * プロジェクトを修正の周りのテストです。
+     * api_tokenがHeaderに含まらないとエラー
      * 自分のプロジェクトを編集できるか
      * サーパーから返したレスポンスの形式があっているか
-     * プロジェクトは編集されたか
+     * プロジェクトは編集して、保存されたか
      * 存在していないプロジェクトを編集すれば、エラー出るか
-     * 他の人のプロジェクトを編集すれば、エラー出るか
-     * ユーザーIDがHeaderに含まらないとエラー出るか
-     */
+    */
     public function testIfChangeProject()
     {
-        $project = Project::first();
-
-        //自分のプロジェクトを編集できるか
         $query = [
-            'project_id' => $project->id,
+            'project_id' => $this->project->id,
             'name' => 'new name',
             'description' => 'new description',
         ];
-        $response = $this->json('PUT', 'project', [], $this->header);
+
+        //api_tokenがHeaderに含まらないとエラー
+        $response = $this->json('PUT', '/api/project', $query, []);
+        $response->assertStatus(401);
+
+        //自分のプロジェクトを編集できるか
+        $header = [
+            'Authorization' => 'Bearer ' . $this->user->api_token,
+            'Accept' => 'application/json',
+        ];
+        $response = $this->json('PUT', '/api/project', $query, $header);
 
         //サーパーから返したレスポンスの形式があっているか
         $response
-            ->assertStatus(201)
+            ->assertStatus(200)
             ->assertJson([
                 'data' => [
                     'name' => $query['name'],
@@ -149,85 +190,73 @@ class ProjectApiTest extends TestCase
                 'author_url' => 'https://github.com/dachoa1995'
             ]);
 
-        //プロジェクトは編集されたか
+        //プロジェクトは編集して、保存されたか
         $project = Project::first();
         $this->assertEquals($query['name'], $project->name);
         $this->assertEquals($query['description'], $project->description);
 
         //存在していないプロジェクトを編集すれば、エラー出るか
         $strange_query = [
-            'project_id' => '300',
+            'project_id' => 300,
             'name' => 'new name',
             'description' => 'new description',
         ];
 
-        $response = $this->json('PUT', 'project', $strange_query, $this->header);
-        $response->assertStatus(404);
-
-        //他の人のプロジェクトを編集すれば、エラー出るか
-        $another_user = factory(User::class)->create();
-        $header = [
-            'user_id' => $another_user->google_id,
-        ];
-        $response = $this->json('PUT', 'project', $query, $header);
+        $response = $this->json('PUT', '/api/project', $strange_query, $header);
         $response->assertStatus(403);
-
-        //ユーザーIDがHeaderに含まらないとエラー出るか
-        $response = $this->json('PUT', 'project', $query, []);
-        $response->assertStatus(401);
     }
 
     /*
      * 自分のプロジェクトに担当者アサインの周りのテストです
+     * api_tokenがHeaderに含まらないとエラー出るか
      * サーパーから返したレスポンスの形式があっているか
      * プロジェクトとユーザーの関係を作成されたか
      * アサインされた担当者はプロジェクトをアクセスできるか
      * アサインされた担当者はプロジェクトを編集できるか
-     * ユーザーIDがHeaderに含まらないとエラー出るか
      * 存在していないプロジェクトに担当者アサインできるか
      */
+
     public function testIfAssignToProject() {
-        $project = Project::first();
         //他のユーザーテスト作成
         $another_user = factory(User::class)->create();
 
+        //api_tokenがHeaderに含まらないとエラー出るか
+        $header = [];
+        $query = [
+            'user_id' => $another_user->id,
+            'project_id' => $this->project->id
+        ];
+        $response = $this->json('POST', '/api/assign_project', $query, $header);
+        $response->assertStatus(401);
+
         //プロジェクトに担当者アサインする
         $header = [
-            'user_id' => $this->user->google_id,
-            'assign_to_user_id' => $another_user->google_id
+            'Authorization' => 'Bearer ' . $this->user->api_token,
+            'Accept' => 'application/json',
         ];
-        $response = $this->json('GET', 'assign_project/' . $project->id, [], $header);
+        $response = $this->json('POST', '/api/assign_project', $query, $header);
 
         //サーパーから返したレスポンスの形式があっているか
-        $response
-            ->assertStatus(201)
-            ->assertJson([
-                'data' => [],
-                'version' => '1.0.0',
-                'author_url' => 'https://github.com/dachoa1995'
-            ]);
-
-        //存在していないプロジェクトに担当者アサインできるか
-        $response = $this->json('GET', 'assign_project/300', [], $header);
-        $response->assertStatus(404);
+        $response->assertStatus(204);
 
         //プロジェクトとユーザーの関係を作成されたか
-        $projects_users = Projects_users::first();
-        $this->assertEquals($projects_users['user_id'], $another_user->google_id);
-        $this->assertEquals($projects_users['project_id'], $project->id);
+        $projects_users = ProjectsUsers::all()->last();
+        $this->assertEquals($projects_users['user_id'], $another_user->id);
+        $this->assertEquals($projects_users['project_id'], $this->project->id);
 
         //アサインされた担当者はプロジェクトを取得できるか
         $header = [
-            'user_id' => $another_user->google_id,
+            'Authorization' => 'Bearer ' . $another_user->api_token,
+            'Accept' => 'application/json',
         ];
-        $response = $this->json('GET', 'project/' . $project->id, [], $header);
+        $response = $this->json('GET', '/api/project/' . $this->project->id, [], $header);
 
         $response
             ->assertStatus(200)
             ->assertJson([
                 'data' => [
-                    'name' => $project->name,
-                    'description' => $project->description
+                    'name' => $this->project->name,
+                    'description' => $this->project->description
                 ],
                 'version' => '1.0.0',
                 'author_url' => 'https://github.com/dachoa1995'
@@ -235,14 +264,14 @@ class ProjectApiTest extends TestCase
 
         //アサインされた担当者はプロジェクトを編集できるか
         $query = [
-            'project_id' => $project->id,
+            'project_id' => $this->project->id,
             'name' => 'new name',
             'description' => 'new description',
         ];
-        $response = $this->json('PUT', 'project', $query, $header);
+        $response = $this->json('PUT', '/api/project', $query, $header);
 
         $response
-            ->assertStatus(201)
+            ->assertStatus(200)
             ->assertJson([
                 'data' => [
                     'name' => $query['name'],
@@ -255,53 +284,36 @@ class ProjectApiTest extends TestCase
         $project = Project::first();
         $this->assertEquals($query['name'], $project->name);
         $this->assertEquals($query['description'], $project->description);
-
-        //ユーザーIDがHeaderに含まらないとエラー出るか
-        $response = $this->json('GET', 'assign_project/' . $project->id, [], []);
-        $response->assertStatus(401);
     }
 
     /*
      * プロジェクト削除の周りのテストです
-     * 権限がないユーザーが削除できるか
      * 存在していないプロジェクトを削除できるか
      * 自分のプロジェクトを削除できるか
      * サーパーから返したレスポンスの形式があっているか
      * プロジェクトはデーターベースで削除されたか
-     */
+    */
     public function testIfDeleteProject() {
-        $project = Project::first();
-        //他のユーザーテスト作成
-        $another_user = factory(User::class)->create();
-
-        //権限がないユーザーが削除できるか
         $header = [
-            'user_id' => $another_user->google_id,
+            'Authorization' => 'Bearer ' . $this->user->api_token,
+            'Accept' => 'application/json',
         ];
-        $response = $this->json('DELETE', 'project/' . $project->id, [], $header);
-        $response->assertStatus(403);
 
         //存在していないプロジェクトを削除できるか
-        $response = $this->json('DELETE', 'project/300', [], $this->header);
-        $response->assertStatus(404);
+        $response = $this->json('DELETE', '/api/project/300', [], $header);
+        $response->assertStatus(403);
 
         // 自分のプロジェクトを削除できるか。
-        $response = $this->json('DELETE', 'project/' . $project->id, [], $this->header);
+        $response = $this->json('DELETE', '/api/project/' . $this->project->id, [], $header);
 
         //サーパーから返したレスポンスの形式があっているか
-        $response
-            ->assertStatus(201)
-            ->assertJson([
-                'data' => [],
-                'version' => '1.0.0',
-                'author_url' => 'https://github.com/dachoa1995'
-            ]);
+        $response->assertStatus(204);
 
         //プロジェクトはデーターベースで削除されたか
         $project = Project::first();
-        $this->assertEquals($project, null);
+        $this->assertEquals(is_null($project), true);
 
-        $projects_users = Projects_users::first();
-        $this->assertEquals($projects_users, null);
+        $projects_users = ProjectsUsers::first();
+        $this->assertEquals(is_null($projects_users), true);
     }
 }

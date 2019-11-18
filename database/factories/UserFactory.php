@@ -18,9 +18,9 @@ use Faker\Generator as Faker;
 
 $factory->define(User::class, function (Faker $faker) {
     return [
-        'google_id' => $faker->unique()->randomLetter,
         'email' => $faker->unique()->safeEmail,
+        'api_token' => $faker->macPlatformToken,
         'name' => $faker->name,
-        'avatarURL' => $faker->randomLetter
+        'avatarURL' => $faker->url,
     ];
 });

@@ -18,16 +18,19 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 // プロジェクト一覧を取得
-Route::get('projects', 'ProjectController@index');
+Route::middleware('auth:api')->get('projects', 'ProjectController@index');
 
 // プロジェクト詳細を取得
-Route::get('project/{id}', 'ProjectController@show');
+Route::middleware('auth:api')->get('project/{id}', 'ProjectController@show');
 
 // プロジェクトを投稿
-Route::post('project', 'ProjectController@store');
+Route::middleware('auth:api')->post('project', 'ProjectController@store');
 
 // プロジェクトを更新
-Route::put('project', 'ProjectController@store');
+Route::middleware('auth:api')->put('project', 'ProjectController@store');
 
 // プロジェクトを削除
-Route::delete('project/{id}', 'ProjectController@destroy');
+Route::middleware('auth:api')->delete('project/{id}', 'ProjectController@destroy');
+
+// プロジェクトに担当者をアサインする
+Route::middleware('auth:api')->post('assign_project', 'ProjectController@assign');

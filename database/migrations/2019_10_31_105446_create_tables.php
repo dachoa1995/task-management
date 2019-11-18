@@ -15,7 +15,7 @@ class CreateTables extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->increments('id');
-            $table->bigInteger('google_id')->unique();
+            $table->string('api_token', 80)->unique()->nullable()->default(null);
             $table->string('email', 50)->unique();
             $table->string('name', 50);
             $table->string('avatarURL', 200);
@@ -31,9 +31,9 @@ class CreateTables extends Migration
 
         Schema::create('projects_users', function (Blueprint $table) {
             $table->increments('id');
-            $table->bigInteger('user_id');
+            $table->unsignedInteger('user_id');
             $table->unsignedInteger('project_id');
-            $table->foreign('user_id')->references('google_id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('project_id')->references('id')->on('projects');
             $table->timestamps();
         });
@@ -59,9 +59,9 @@ class CreateTables extends Migration
 
         Schema::create('comments', function (Blueprint $table) {
             $table->increments('id');
-            $table->bigInteger('user_id');
+            $table->unsignedInteger('user_id');
             $table->unsignedInteger('task_id');
-            $table->foreign('user_id')->references('google_id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('task_id')->references('id')->on('tasks');
             $table->string('content', 500);
             $table->timestamps();
@@ -69,9 +69,9 @@ class CreateTables extends Migration
 
         Schema::create('tasks_users', function (Blueprint $table) {
             $table->increments('id');
-            $table->bigInteger('user_id');
+            $table->unsignedInteger('user_id');
             $table->unsignedInteger('task_id');
-            $table->foreign('user_id')->references('google_id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('task_id')->references('id')->on('tasks');
             $table->timestamps();
         });

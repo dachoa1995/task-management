@@ -32,17 +32,9 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        if ($request->isMethod('PUT')) {
-            $project_id = $request->input('project_id');
-            if ($this->checkIfUserAuth($project_id)) {
-                return response()->json([
-                    'error' => 'Can not access because of unauthorized'
-                ], 403);
-            }
-            $project = Project::findOrFail($project_id);
-        } else {
-            $project = new Project();
-        }
+        $project_id = $request->input('project_id');
+
+        $project = $request->isMethod('PUT') ? Project::findOrFail($project_id) : $project = new Project();
 
         $project->name = $request->input('name');
         $project->description = $request->input('description');
@@ -65,30 +57,16 @@ class ProjectController extends Controller
         ], 500);
     }
 
-    /*
-     * プロジェクトをアクセス権限があるか、チェック
-     */
-    private function checkIfUserAuth($id) {
-        $project_user = ProjectsUsers::select('id')
-            ->where('project_id', '=', $id)
-            ->where('user_id', '=', Auth::id())
-            ->get();
-        return is_null($project_user) || count($project_user) === 0;
-    }
     /**
      * @param $id
      * @return ProjectResource
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        if ($this->checkIfUserAuth($id)) {
-            return response()->json([
-                'error' => 'Can not access because of unauthorized'
-            ], 403);
-        }
+        $project_id = $request->input('project_id');
 
         // get project
-        $project = Project::findOrFail($id);
+        $project = Project::findOrFail($project_id);
 
         // return single article as a resource
         return new ProjectResource($project);
@@ -98,18 +76,14 @@ class ProjectController extends Controller
      * @param $id
      * @return ProjectResource|\Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        if ($this->checkIfUserAuth($id)) {
-            return response()->json([
-                'error' => 'Can not access because of unauthorized'
-            ], 403);
-        }
+        $project_id = $request->input('project_id');
 
         // get project
-        $project = Project::findOrFail($id);
+        $project = Project::findOrFail($project_id);
 
-        $project_user = ProjectsUsers::where('project_id', '=', $id)
+        $project_user = ProjectsUsers::where('project_id', '=', $project_id)
             ->where('user_id', '=', Auth::id());
 
         // return single article as a resource
@@ -128,12 +102,6 @@ class ProjectController extends Controller
     public function assign(Request $request) {
         $project_id = $request->input('project_id');
         $user_id = $request->input('user_id');
-        if ($this->checkIfUserAuth($project_id)) {
-            return response()->json([
-                'error' => 'Can not access because of unauthorized'
-            ], 403);
-        }
-
         $project_user = new ProjectsUsers();
         $project_user->user_id = $user_id;
         $project_user->project_id = $project_id;

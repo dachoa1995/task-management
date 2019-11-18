@@ -93,8 +93,11 @@ class ProjectApiTest extends TestCase
     public function testIfAccessProject()
     {
         $header = [];
+        $query = [
+            'project_id' => $this->project->id
+        ];
         //api_tokenがHeaderに含まらないとエラー
-        $response = $this->json('GET', '/api/project/' . $this->project->id, [], $header);
+        $response = $this->json('GET', '/api/project', $query, $header);
         $response->assertStatus(401);
 
         //自分のプロジェクトを取得できるか
@@ -102,7 +105,7 @@ class ProjectApiTest extends TestCase
             'Authorization' => 'Bearer ' . $this->user->api_token,
             'Accept' => 'application/json',
         ];
-        $response = $this->json('GET', '/api/project/' . $this->project->id, [], $header);
+        $response = $this->json('GET', '/api/project', $query, $header);
 
         //サーパーから返したレスポンスの形式があっているか
         $response
@@ -117,7 +120,10 @@ class ProjectApiTest extends TestCase
             ]);
 
         //存在していないプロジェクトを取得すれば、エラー出るか
-        $response = $this->json('GET', '/api/project/300', [], $header);
+        $query = [
+            'project_id' => 300
+        ];
+        $response = $this->json('GET', '/api/project', $query, $header);
         $response->assertStatus(403);
     }
 
@@ -220,7 +226,10 @@ class ProjectApiTest extends TestCase
             'Authorization' => 'Bearer ' . $another_user->api_token,
             'Accept' => 'application/json',
         ];
-        $response = $this->json('GET', '/api/project/' . $this->project->id, [], $header);
+        $query = [
+            'project_id' => $this->project->id
+        ];
+        $response = $this->json('GET', '/api/project', $query, $header);
 
         $response
             ->assertStatus(200)
@@ -272,11 +281,17 @@ class ProjectApiTest extends TestCase
         ];
 
         //存在していないプロジェクトを削除できるか
-        $response = $this->json('DELETE', '/api/project/300', [], $header);
+        $query = [
+            'project_id' => 300
+        ];
+        $response = $this->json('DELETE', '/api/project', $query, $header);
         $response->assertStatus(403);
 
         // 自分のプロジェクトを削除できるか。
-        $response = $this->json('DELETE', '/api/project/' . $this->project->id, [], $header);
+        $query = [
+            'project_id' => $this->project->id
+        ];
+        $response = $this->json('DELETE', '/api/project', $query, $header);
 
         //サーパーから返したレスポンスの形式があっているか
         $response->assertStatus(204);
@@ -306,7 +321,6 @@ class ProjectApiTest extends TestCase
         $project_user->user_id = $another_user->id;
         $project_user->project_id = $project->id;
         $project_user->save();
-
 
 
         // 自分のテストプロジェクトを作成
@@ -375,7 +389,14 @@ class ProjectApiTest extends TestCase
             'Authorization' => 'Bearer ' . $another_user->api_token,
             'Accept' => 'application/json',
         ];
-        $response = $this->json('GET', '/api/project/' . $this->project->id, [], $header);
+        $query = [
+            'project_id' => $this->project->id,
+        ];
+        $response = $this->json('GET', '/api/project', $query, $header);
+        $response->assertStatus(403);
+
+        //他の人のプロジェクトを削除すれば、エラー出るか
+        $response = $this->json('DELETE', '/api/project', $query, $header);
         $response->assertStatus(403);
 
         //他の人のプロジェクトを編集すれば、エラー出るか
@@ -385,10 +406,6 @@ class ProjectApiTest extends TestCase
             'description' => 'new description',
         ];
         $response = $this->json('PUT', '/api/project', $query, $header);
-        $response->assertStatus(403);
-
-        //他の人のプロジェクトを削除すれば、エラー出るか
-        $response = $this->json('DELETE', '/api/project/' . $this->project->id, [], $header);
         $response->assertStatus(403);
 
         //他の人のプロジェクトを担当者アサインすれば、エラー出るか

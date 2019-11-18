@@ -122,47 +122,6 @@ class ProjectApiTest extends TestCase
     }
 
     /*
-     * 権限がないアクセスの周りのテストです。
-     * 他の人のプロジェクトを取得すれば、エラー出るか
-     * 他の人のプロジェクトを編集すれば、エラー出るか
-     * 他の人のプロジェクトを削除すれば、エラー出るか
-     * 他の人のプロジェクトを担当者アサインすれば、エラー出るか
-     */
-    public function testIfAccessWithoutAuth() {
-        //他の人のプロジェクトを取得すれば、エラー出るか
-        $another_user = factory(User::class)->create();
-        $header = [
-            'Authorization' => 'Bearer ' . $another_user->api_token,
-            'Accept' => 'application/json',
-        ];
-        $response = $this->json('GET', '/api/project/' . $this->project->id, [], $header);
-        $response->assertStatus(403);
-
-        //他の人のプロジェクトを編集すれば、エラー出るか
-        $query = [
-            'project_id' => $this->project->id,
-            'name' => 'new name',
-            'description' => 'new description',
-        ];
-        $response = $this->json('PUT', '/api/project', $query, $header);
-        $response->assertStatus(403);
-
-        //他の人のプロジェクトを削除すれば、エラー出るか
-        $response = $this->json('DELETE', '/api/project/' . $this->project->id, [], $header);
-        $response->assertStatus(403);
-
-        /*
-         * 他の人のプロジェクトを担当者アサインすれば、エラー出るか
-         */
-        $query = [
-            'user_id' => $this->user->id,
-            'project_id' => $this->project->id
-        ];
-        $response = $this->json('POST', '/api/assign_project', $query, $header);
-        $response->assertStatus(403);
-    }
-
-    /*
      * プロジェクトを修正の周りのテストです。
      * api_tokenがHeaderに含まらないとエラー
      * 自分のプロジェクトを編集できるか
@@ -326,5 +285,44 @@ class ProjectApiTest extends TestCase
 
         $projects_users = ProjectsUsers::first();
         $this->assertEquals(is_null($projects_users), true);
+    }
+
+    /*
+     * 権限がないアクセスの周りのテストです。
+     * 他の人のプロジェクトを取得すれば、エラー出るか
+     * 他の人のプロジェクトを編集すれば、エラー出るか
+     * 他の人のプロジェクトを削除すれば、エラー出るか
+     * 他の人のプロジェクトを担当者アサインすれば、エラー出るか
+     */
+    public function testIfAccessWithoutAuth() {
+        //他の人のプロジェクトを取得すれば、エラー出るか
+        $another_user = factory(User::class)->create();
+        $header = [
+            'Authorization' => 'Bearer ' . $another_user->api_token,
+            'Accept' => 'application/json',
+        ];
+        $response = $this->json('GET', '/api/project/' . $this->project->id, [], $header);
+        $response->assertStatus(403);
+
+        //他の人のプロジェクトを編集すれば、エラー出るか
+        $query = [
+            'project_id' => $this->project->id,
+            'name' => 'new name',
+            'description' => 'new description',
+        ];
+        $response = $this->json('PUT', '/api/project', $query, $header);
+        $response->assertStatus(403);
+
+        //他の人のプロジェクトを削除すれば、エラー出るか
+        $response = $this->json('DELETE', '/api/project/' . $this->project->id, [], $header);
+        $response->assertStatus(403);
+
+        //他の人のプロジェクトを担当者アサインすれば、エラー出るか
+        $query = [
+            'user_id' => $this->user->id,
+            'project_id' => $this->project->id
+        ];
+        $response = $this->json('POST', '/api/assign_project', $query, $header);
+        $response->assertStatus(403);
     }
 }

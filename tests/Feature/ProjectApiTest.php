@@ -126,6 +126,7 @@ class ProjectApiTest extends TestCase
      * 他の人のプロジェクトを取得すれば、エラー出るか
      * 他の人のプロジェクトを編集すれば、エラー出るか
      * 他の人のプロジェクトを削除すれば、エラー出るか
+     * 他の人のプロジェクトを担当者アサインすれば、エラー出るか
      */
     public function testIfAccessWithoutAuth() {
         //他の人のプロジェクトを取得すれば、エラー出るか
@@ -148,6 +149,16 @@ class ProjectApiTest extends TestCase
 
         //他の人のプロジェクトを削除すれば、エラー出るか
         $response = $this->json('DELETE', '/api/project/' . $this->project->id, [], $header);
+        $response->assertStatus(403);
+
+        /*
+         * 他の人のプロジェクトを担当者アサインすれば、エラー出るか
+         */
+        $query = [
+            'user_id' => $this->user->id,
+            'project_id' => $this->project->id
+        ];
+        $response = $this->json('POST', '/api/assign_project', $query, $header);
         $response->assertStatus(403);
     }
 

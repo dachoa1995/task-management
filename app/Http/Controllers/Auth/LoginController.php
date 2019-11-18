@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Laravel\Socialite\Facades\Socialite;
 use App\User;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -58,8 +59,8 @@ class LoginController extends Controller
             return redirect('/home');
         } else {
             User::firstOrCreate([
-                'google_id' => $userGoogle->getId(),
                 'email' => $userGoogle->getEmail(),
+                'api_token' => Str::random(60),
                 'name' => $userGoogle->getName(),
                 'avatarURL' => $userGoogle->getAvatar(),
             ]);

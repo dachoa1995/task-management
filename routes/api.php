@@ -34,3 +34,19 @@ Route::middleware('auth:api')->delete('project', 'ProjectController@destroy')->m
 
 // プロジェクトに担当者をアサインする
 Route::middleware('auth:api')->post('assign_project', 'ProjectController@assign')->middleware('projectAuth');
+
+
+// ワークフロー覧を取得
+Route::middleware('auth:api')->get('status_list', 'StatusController@index')->middleware('projectAuth');
+
+// ワークフロー詳細を取得
+Route::middleware('auth:api')->get('status', 'StatusController@show')->middleware('projectAuth');
+
+// ワークフローを投稿
+Route::middleware('auth:api')->post('status', 'StatusController@store')->middleware('projectAuth');
+
+// ワークフローを更新
+Route::middleware('auth:api')->put('status', 'StatusController@store')->middleware('projectAuth');
+
+// ワークフローを削除
+Route::middleware('auth:api')->delete('status', 'StatusController@destroy')->middleware('projectAuth');

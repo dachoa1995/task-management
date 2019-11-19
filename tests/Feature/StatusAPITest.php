@@ -70,11 +70,7 @@ class StatusAPITest extends TestCase
         $response->assertStatus(403);
 
         // テストプロジェクトワークフローを作成
-        $status_data = [
-            'project_id' => $this->project->id,
-            'name' => '開発中',
-            'order' => 2,
-        ];
+        $status_data['project_id'] = $this->project->id;
 
         //ワークフローを作成いうリクエストを送る
         $response = $this->json('POST', '/api/status', $status_data, $header);

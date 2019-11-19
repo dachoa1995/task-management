@@ -252,6 +252,11 @@ class ProjectApiTest extends TestCase
         $project = Project::first();
         $this->assertEquals($query['name'], $project->name);
         $this->assertEquals($query['description'], $project->description);
+
+        //存在していないプロジェクトに担当者アサインできるか
+        $query['project_id'] = 300;
+        $response = $this->json('POST', '/api/assign_project', $query, $header);
+        $response->assertStatus(403);
     }
 
     /*

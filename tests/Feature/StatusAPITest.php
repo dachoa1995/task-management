@@ -324,6 +324,8 @@ class StatusAPITest extends TestCase
      * 他の人のプロジェクトでワークフローを作成できるか
      * 他の人のプロジェクトのワークフローを取得できるか
      * 他の人のプロジェクトのワークフローを編集できるか
+     * 他の人のプロジェクトのワークフローを削除できるか
+     * 他の人のプロジェクトのワークフロー一覧を取得できるか
      */
     public function testIfAccessWithoutAuth()
     {
@@ -357,6 +359,10 @@ class StatusAPITest extends TestCase
 
         //他の人のプロジェクトのワークフローを削除できるか
         $response = $this->json('DELETE', '/api/status', $query, $header);
+        $response->assertStatus(403);
+
+        //他の人のプロジェクトのワークフロー一覧を取得できるか
+        $response = $this->json('GET', '/api/status_list', $query, $header);
         $response->assertStatus(403);
     }
 }

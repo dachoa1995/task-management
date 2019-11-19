@@ -120,9 +120,7 @@ class ProjectApiTest extends TestCase
             ]);
 
         //存在していないプロジェクトを取得すれば、エラー出るか
-        $query = [
-            'project_id' => 300
-        ];
+        $query['project_id'] = 300;
         $response = $this->json('GET', '/api/project', $query, $header);
         $response->assertStatus(403);
     }
@@ -172,11 +170,7 @@ class ProjectApiTest extends TestCase
         $this->assertEquals($query['description'], $project->description);
 
         //存在していないプロジェクトを編集すれば、エラー出るか
-        $strange_query = [
-            'project_id' => 300,
-            'name' => 'new name',
-            'description' => 'new description',
-        ];
+        $strange_query['project_id'] = 300;
 
         $response = $this->json('PUT', '/api/project', $strange_query, $header);
         $response->assertStatus(403);
@@ -226,9 +220,6 @@ class ProjectApiTest extends TestCase
             'Authorization' => 'Bearer ' . $another_user->api_token,
             'Accept' => 'application/json',
         ];
-        $query = [
-            'project_id' => $this->project->id
-        ];
         $response = $this->json('GET', '/api/project', $query, $header);
 
         $response
@@ -243,11 +234,8 @@ class ProjectApiTest extends TestCase
             ]);
 
         //アサインされた担当者はプロジェクトを編集できるか
-        $query = [
-            'project_id' => $this->project->id,
-            'name' => 'new name',
-            'description' => 'new description',
-        ];
+        $query['name'] = 'new name';
+        $query['description'] = 'new description';
         $response = $this->json('PUT', '/api/project', $query, $header);
 
         $response
@@ -268,6 +256,7 @@ class ProjectApiTest extends TestCase
 
     /*
      * プロジェクト削除の周りのテストです
+     * api_tokenがHeaderに含まらないとエラー出るか
      * 存在していないプロジェクトを削除できるか
      * 自分のプロジェクトを削除できるか
      * サーパーから返したレスポンスの形式があっているか
@@ -275,12 +264,17 @@ class ProjectApiTest extends TestCase
     */
     public function testIfDeleteProject()
     {
+
+        //api_tokenがHeaderに含まらないとエラー出るか
+        $header = [];
+        $response = $this->json('DELETE', '/api/project', [], $header);
+        $response->assertStatus(401);
+
+        //存在していないプロジェクトを削除できるか
         $header = [
             'Authorization' => 'Bearer ' . $this->user->api_token,
             'Accept' => 'application/json',
         ];
-
-        //存在していないプロジェクトを削除できるか
         $query = [
             'project_id' => 300
         ];
@@ -288,9 +282,7 @@ class ProjectApiTest extends TestCase
         $response->assertStatus(403);
 
         // 自分のプロジェクトを削除できるか。
-        $query = [
-            'project_id' => $this->project->id
-        ];
+        $query['project_id'] = $this->project->id;
         $response = $this->json('DELETE', '/api/project', $query, $header);
 
         //サーパーから返したレスポンスの形式があっているか
@@ -306,6 +298,8 @@ class ProjectApiTest extends TestCase
 
     /*
      * プロジェクト一覧を取得の周りのテストです。
+     * api_tokenがHeaderに含まらないとエラー出るか
+     * 自分のプロジェクト一覧取得
      */
     public function testIfGetListProject()
     {
@@ -400,19 +394,13 @@ class ProjectApiTest extends TestCase
         $response->assertStatus(403);
 
         //他の人のプロジェクトを編集すれば、エラー出るか
-        $query = [
-            'project_id' => $this->project->id,
-            'name' => 'new name',
-            'description' => 'new description',
-        ];
+        $query['name'] = 'new name';
+        $query['description'] = 'new description';
         $response = $this->json('PUT', '/api/project', $query, $header);
         $response->assertStatus(403);
 
         //他の人のプロジェクトを担当者アサインすれば、エラー出るか
-        $query = [
-            'user_id' => $this->user->id,
-            'project_id' => $this->project->id
-        ];
+        $query['user_id'] = $this->user->id;
         $response = $this->json('POST', '/api/assign_project', $query, $header);
         $response->assertStatus(403);
     }

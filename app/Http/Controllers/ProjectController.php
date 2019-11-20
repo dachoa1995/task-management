@@ -17,7 +17,6 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        // get projects
         $projects = projectsUsers::with(['project'])
             ->where('user_id', '=', Auth::id())
             ->paginate(10);
@@ -34,7 +33,7 @@ class ProjectController extends Controller
     {
         $project_id = $request->input('project_id');
 
-        $project = $request->isMethod('PUT') ? Project::findOrFail($project_id) : $project = new Project();
+        $project = $request->isMethod('PUT') ? Project::findOrFail($project_id) : new Project();
 
         $project->name = $request->input('name');
         $project->description = $request->input('description');
@@ -65,10 +64,8 @@ class ProjectController extends Controller
     {
         $project_id = $request->input('project_id');
 
-        // get project
         $project = Project::findOrFail($project_id);
 
-        // return single article as a resource
         return new ProjectResource($project);
     }
 
@@ -80,13 +77,11 @@ class ProjectController extends Controller
     {
         $project_id = $request->input('project_id');
 
-        // get project
         $project = Project::findOrFail($project_id);
 
         $project_user = ProjectsUsers::where('project_id', '=', $project_id)
             ->where('user_id', '=', Auth::id());
 
-        // return single article as a resource
         if ($project->delete() && $project_user->delete()) {
             return response()->json([], 204);
         } else {

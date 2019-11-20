@@ -19,7 +19,6 @@ class StatusController extends Controller
         $status = Status::where('project_id', '=', $project_id)
             ->paginate(10);
 
-        // return collection of projects as a resource
         return StatusResource::collection($status);
     }
 
@@ -30,7 +29,7 @@ class StatusController extends Controller
     {
         $status_id = $request->input('status_id');
 
-        $status = $request->isMethod('PUT') ? Status::findOrFail($status_id) : $project = new Status();
+        $status = $request->isMethod('PUT') ? Status::findOrFail($status_id) : new Status();
 
         $status->project_id = $request->input('project_id');
         $status->name = $request->input('name');
@@ -51,10 +50,9 @@ class StatusController extends Controller
     {
         $status_id = $request->input('status_id');
 
-        // get project
+        // get status
         $status = Status::findOrFail($status_id);
 
-        // return single article as a resource
         return new StatusResource($status);
     }
 
@@ -71,7 +69,6 @@ class StatusController extends Controller
         // get status
         $status = Status::findOrFail($status_id);
 
-        // return single article as a resource
         if ($status->delete()) {
             return response()->json([], 204);
         } else {

@@ -50,3 +50,22 @@ Route::middleware('auth:api')->put('status', 'StatusController@store')->middlewa
 
 // ワークフローを削除
 Route::middleware('auth:api')->delete('status', 'StatusController@destroy')->middleware('projectAuth');
+
+
+// タスクー覧を取得
+Route::middleware('auth:api')->get('tasks', 'TaskController@index')->middleware('projectAuth');
+
+// タスク詳細を取得
+Route::middleware('auth:api')->get('task', 'TaskController@show')->middleware('projectAuth');
+
+// タスクを投稿
+Route::middleware('auth:api')->post('task', 'TaskController@store')->middleware('projectAuth');
+
+// タスクを更新
+Route::middleware('auth:api')->put('task', 'TaskController@store')->middleware('projectAuth');
+
+// タスクを削除
+Route::middleware('auth:api')->delete('task', 'TaskController@destroy')->middleware('projectAuth');
+
+// タスクに担当者をアサインする
+Route::middleware('auth:api')->post('assign_task', 'TaskController@assign')->middleware('projectAuth');

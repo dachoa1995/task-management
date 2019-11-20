@@ -14,6 +14,7 @@ class ProjectApiTest extends TestCase
     use RefreshDatabase;
     private $user;
     private $project;
+    private $header;
 
     protected function setUp(): void
     {
@@ -30,6 +31,11 @@ class ProjectApiTest extends TestCase
         $project_user->user_id = $this->user->id;
         $project_user->project_id = $this->project->id;
         $project_user->save();
+
+        $this->header = [
+            'Authorization' => 'Bearer ' . $this->user->api_token,
+            'Accept' => 'application/json',
+        ];
     }
 
     /*
@@ -48,17 +54,11 @@ class ProjectApiTest extends TestCase
         ];
 
         //api_tokenがHeaderに含まらないとエラー
-        $header = [];
-        $response = $this->json('POST', '/api/project', $new_project, $header);
+        $response = $this->json('POST', '/api/project', $new_project, []);
         $response->assertStatus(401);
 
         //新しいプロジェクトを作成というリクエストを送る
-        $header = [
-            'Authorization' => 'Bearer ' . $this->user->api_token,
-            'Accept' => 'application/json',
-        ];
-
-        $response = $this->json('POST', '/api/project', $new_project, $header);
+        $response = $this->json('POST', '/api/project', $new_project, $this->header);
 
         //作成したプロジェクトを保存されたかチェック
         $project = Project::all()->last();
@@ -92,20 +92,15 @@ class ProjectApiTest extends TestCase
     */
     public function testIfAccessProject()
     {
-        $header = [];
         $query = [
             'project_id' => $this->project->id
         ];
         //api_tokenがHeaderに含まらないとエラー
-        $response = $this->json('GET', '/api/project', $query, $header);
+        $response = $this->json('GET', '/api/project', $query, []);
         $response->assertStatus(401);
 
         //自分のプロジェクトを取得できるか
-        $header = [
-            'Authorization' => 'Bearer ' . $this->user->api_token,
-            'Accept' => 'application/json',
-        ];
-        $response = $this->json('GET', '/api/project', $query, $header);
+        $response = $this->json('GET', '/api/project', $query, $this->header);
 
         //サーパーから返したレスポンスの形式があっているか
         $response
@@ -121,7 +116,7 @@ class ProjectApiTest extends TestCase
 
         //存在していないプロジェクトを取得すれば、エラー出るか
         $query['project_id'] = 300;
-        $response = $this->json('GET', '/api/project', $query, $header);
+        $response = $this->json('GET', '/api/project', $query, $this->header);
         $response->assertStatus(403);
     }
 
@@ -146,11 +141,7 @@ class ProjectApiTest extends TestCase
         $response->assertStatus(401);
 
         //自分のプロジェクトを編集できるか
-        $header = [
-            'Authorization' => 'Bearer ' . $this->user->api_token,
-            'Accept' => 'application/json',
-        ];
-        $response = $this->json('PUT', '/api/project', $query, $header);
+        $response = $this->json('PUT', '/api/project', $query, $this->header);
 
         //サーパーから返したレスポンスの形式があっているか
         $response
@@ -172,7 +163,7 @@ class ProjectApiTest extends TestCase
         //存在していないプロジェクトを編集すれば、エラー出るか
         $strange_query['project_id'] = 300;
 
-        $response = $this->json('PUT', '/api/project', $strange_query, $header);
+        $response = $this->json('PUT', '/api/project', $strange_query, $this->header);
         $response->assertStatus(403);
     }
 
@@ -192,20 +183,15 @@ class ProjectApiTest extends TestCase
         $another_user = factory(User::class)->create();
 
         //api_tokenがHeaderに含まらないとエラー出るか
-        $header = [];
         $query = [
             'user_id' => $another_user->id,
             'project_id' => $this->project->id
         ];
-        $response = $this->json('POST', '/api/assign_project', $query, $header);
+        $response = $this->json('POST', '/api/assign_project', $query, []);
         $response->assertStatus(401);
 
         //プロジェクトに担当者アサインする
-        $header = [
-            'Authorization' => 'Bearer ' . $this->user->api_token,
-            'Accept' => 'application/json',
-        ];
-        $response = $this->json('POST', '/api/assign_project', $query, $header);
+        $response = $this->json('POST', '/api/assign_project', $query, $this->header);
 
         //サーパーから返したレスポンスの形式があっているか
         $response->assertStatus(204);
@@ -252,6 +238,11 @@ class ProjectApiTest extends TestCase
         $project = Project::first();
         $this->assertEquals($query['name'], $project->name);
         $this->assertEquals($query['description'], $project->description);
+
+        //存在していないプロジェクトに担当者アサインできるか
+        $query['project_id'] = 300;
+        $response = $this->json('POST', '/api/assign_project', $query, $this->header);
+        $response->assertStatus(403);
     }
 
     /*
@@ -266,24 +257,19 @@ class ProjectApiTest extends TestCase
     {
 
         //api_tokenがHeaderに含まらないとエラー出るか
-        $header = [];
-        $response = $this->json('DELETE', '/api/project', [], $header);
+        $response = $this->json('DELETE', '/api/project', [], []);
         $response->assertStatus(401);
 
         //存在していないプロジェクトを削除できるか
-        $header = [
-            'Authorization' => 'Bearer ' . $this->user->api_token,
-            'Accept' => 'application/json',
-        ];
         $query = [
             'project_id' => 300
         ];
-        $response = $this->json('DELETE', '/api/project', $query, $header);
+        $response = $this->json('DELETE', '/api/project', $query, $this->header);
         $response->assertStatus(403);
 
         // 自分のプロジェクトを削除できるか。
         $query['project_id'] = $this->project->id;
-        $response = $this->json('DELETE', '/api/project', $query, $header);
+        $response = $this->json('DELETE', '/api/project', $query, $this->header);
 
         //サーパーから返したレスポンスの形式があっているか
         $response->assertStatus(204);
@@ -327,16 +313,11 @@ class ProjectApiTest extends TestCase
         $project_user->save();
 
         // api_tokenがHeaderに含まらないとエラー出るか
-        $header = [];
-        $response = $this->json('GET', '/api/projects', [], $header);
+        $response = $this->json('GET', '/api/projects', [], []);
         $response->assertStatus(401);
 
         // 自分のプロジェクト一覧取得
-        $header = [
-            'Authorization' => 'Bearer ' . $this->user->api_token,
-            'Accept' => 'application/json',
-        ];
-        $response = $this->json('GET', '/api/projects', [], $header);
+        $response = $this->json('GET', '/api/projects', [], $this->header);
         $response
             ->assertStatus(200)
             ->assertJson([

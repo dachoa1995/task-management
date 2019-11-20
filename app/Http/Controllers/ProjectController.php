@@ -17,7 +17,6 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        // get projects
         $projects = projectsUsers::with(['project'])
             ->where('user_id', '=', Auth::id())
             ->paginate(10);
@@ -65,7 +64,6 @@ class ProjectController extends Controller
     {
         $project_id = $request->input('project_id');
 
-        // get project
         $project = Project::findOrFail($project_id);
 
         return new ProjectResource($project);
@@ -79,7 +77,6 @@ class ProjectController extends Controller
     {
         $project_id = $request->input('project_id');
 
-        // get project
         $project = Project::findOrFail($project_id);
 
         $project_user = ProjectsUsers::where('project_id', '=', $project_id)

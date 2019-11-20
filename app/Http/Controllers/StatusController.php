@@ -15,7 +15,7 @@ class StatusController extends Controller
     public function index(Request $request)
     {
         $project_id = $request->input('project_id');
-        // get projects
+
         $status = Status::where('project_id', '=', $project_id)
             ->paginate(10);
 
@@ -50,7 +50,6 @@ class StatusController extends Controller
     {
         $status_id = $request->input('status_id');
 
-        // get status
         $status = Status::findOrFail($status_id);
 
         return new StatusResource($status);
@@ -66,7 +65,6 @@ class StatusController extends Controller
     {
         $status_id = $request->input('status_id');
 
-        // get status
         $status = Status::findOrFail($status_id);
 
         if ($status->delete()) {

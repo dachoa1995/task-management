@@ -18,7 +18,7 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         $status_id = $request->input('status_id');
-        // get projects
+
         $tasks = Task::where('status_id', '=', $status_id)
             ->paginate(10);
 
@@ -77,7 +77,6 @@ class TaskController extends Controller
     {
         $task_id = $request->input('task_id');
 
-        // get status
         $task = Task::findOrFail($task_id);
 
         // return single article as a resource

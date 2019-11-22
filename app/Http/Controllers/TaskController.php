@@ -33,11 +33,10 @@ class TaskController extends Controller
         // ワークフローが存在しているか、チェック
         $project_id = $request->input('project_id');
         $status_id = $request->input('status_id');
-        $status = Status::select('id')
-            ->where('project_id', '=', $project_id)
+        $status = Status::where('project_id', '=', $project_id)
             ->where('id', '=', $status_id)
-            ->get();
-        if (is_null($status) || count($status) === 0) {
+            ->doesntExist();
+        if ($status) {
             return response()->json([
                 'error' => 'status is not exist'
             ], 404);
@@ -107,10 +106,9 @@ class TaskController extends Controller
     public function assign(Request $request) {
         $task_id = $request->input('task_id');
 
-        $task = Task::select('id')
-            ->where('id', '=', $task_id)
-            ->get();
-        if (is_null($task) || count($task) === 0) {
+        $task = Task::where('id', '=', $task_id)
+            ->doesntExist();
+        if ($task) {
             return response()->json([
                 'error' => 'task is not exist'
             ], 404);

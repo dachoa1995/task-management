@@ -18,11 +18,10 @@ class projectAuth
     public function handle($request, Closure $next)
     {
         $project_id = $request->input('project_id');
-        $project_user = ProjectsUsers::select('id')
-            ->where('project_id', '=', $project_id)
+        $project_user = ProjectsUsers::where('project_id', '=', $project_id)
             ->where('user_id', '=', Auth::id())
-            ->get();
-        if (is_null($project_user) || count($project_user) === 0) {
+            ->doesntExist();
+        if ($project_user) {
             return response()->json([
                 'error' => 'Can not access because of unauthorized'
             ], 403);

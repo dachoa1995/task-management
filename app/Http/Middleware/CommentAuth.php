@@ -18,11 +18,10 @@ class CommentAuth
     public function handle($request, Closure $next)
     {
         $comment_id = $request->input('comment_id');
-        $comment = Comment::select('id')
-            ->where('id', '=', $comment_id)
+        $comment = Comment::where('id', '=', $comment_id)
             ->where('user_id', '=', Auth::id())
-            ->get();
-        if (is_null($comment) || count($comment) === 0) {
+            ->doesntExist();
+        if ($comment) {
             return response()->json([
                 'error' => 'Can not access comment because of unauthorized or comment is not exist'
             ], 403);

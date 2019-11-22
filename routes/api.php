@@ -13,10 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 // プロジェクト一覧を取得
 Route::middleware('auth:api')->get('projects', 'ProjectController@index');
 

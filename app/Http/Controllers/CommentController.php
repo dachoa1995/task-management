@@ -32,11 +32,10 @@ class CommentController extends Controller
     {
         //タスクが存在しているか、チェック
         $task_id = $request->input('task_id');
-        $task = Task::select('id')
-            ->where('id', '=', $task_id)
-            ->get();
+        $task = Task::where('id', '=', $task_id)
+            ->doesntExist();
 
-        if (is_null($task) || count($task) === 0) {
+        if ($task) {
             return response()->json([
                 'error' => 'task is not exist'
             ], 404);

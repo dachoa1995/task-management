@@ -69,3 +69,16 @@ Route::middleware('auth:api')->delete('task', 'TaskController@destroy')->middlew
 
 // タスクに担当者をアサインする
 Route::middleware('auth:api')->post('assign_task', 'TaskController@assign')->middleware('projectAuth');
+
+
+// タスクでコメントー覧を取得
+Route::middleware('auth:api')->get('comments', 'CommentController@index')->middleware('projectAuth');
+
+// タスクでコメントを投稿
+Route::middleware('auth:api')->post('comment', 'CommentController@store')->middleware('projectAuth');
+
+// タスクでコメントを更新
+Route::middleware('auth:api')->put('comment', 'CommentController@update')->middleware('projectAuth')->middleware('commentAuth');
+
+// タスクでコメントを削除
+Route::middleware('auth:api')->delete('comment', 'CommentController@destroy')->middleware('projectAuth')->middleware('commentAuth');

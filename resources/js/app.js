@@ -21,6 +21,7 @@ Vue.use(VueAuthenticate, {
 });
 
 const createApp = async () => {
+  // ログインチェックしてからアプリを生成する
   await store.dispatch('auth/currentUser');
 
   new Vue({

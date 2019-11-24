@@ -18,9 +18,9 @@ const routes = [
     beforeEnter(to, from, next) {
       if (!store.getters['auth/check']) {
         next('/login')
-      } else {
-        next();
       }
+
+      next();
     }
   },
   {
@@ -29,9 +29,9 @@ const routes = [
     beforeEnter(to, from, next) {
       if (store.getters['auth/check']) {
         next('/')
-      } else {
-        next()
       }
+
+      next()
     }
   }
 ];

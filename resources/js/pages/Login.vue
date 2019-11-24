@@ -1,0 +1,43 @@
+<template>
+    <div class="container--small">
+
+        <div class="panel">
+            <form class="form">
+                <div class="form__button">
+                    <button @click="login()" class="button button--inverse">
+                        Sign in with Google
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</template>
+<script>
+  export default {
+    // Waiting for the callback.blade.php message (token and username).
+    mounted() {
+      window.addEventListener('message', this.onMessage, false)
+    },
+
+    data() {
+      return {}
+    },
+    methods: {
+      async login() {
+        await this.$auth.authenticate('google');
+      },
+      async onMessage(e) {
+        if (e.origin !== window.origin || !e.data.token) {
+          return
+        }
+        // save token and username to Vuex
+        await this.$store.dispatch('auth/login', e.data);
+
+        // トップページに移動する
+        this.$router.push('/');
+      }
+
+    }
+  }
+</script>

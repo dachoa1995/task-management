@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,6 +13,11 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+// ログインユーザー
+Route::get('/user', function () {
+    return Auth::user();
+})->name('user');
 
 // プロジェクト一覧を取得
 Route::middleware('auth:api')->get('projects', 'ProjectController@index');

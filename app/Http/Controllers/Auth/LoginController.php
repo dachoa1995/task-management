@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Laravel\Socialite\Facades\Socialite;
 use App\User;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -53,19 +54,24 @@ class LoginController extends Controller
      */
     public function handleProviderCallback()
     {
-        $userGoogle = Socialite::driver('google')->user();
+        $userGoogle = Socialite::driver('google')->stateless()->user();
         $user = User::where(['email' => $userGoogle->getEmail()])->first();
-        if ($user) {
-            return redirect('/home');
-        } else {
-            User::firstOrCreate([
+        if (!$user) {
+            //Generate random unique token
+            $api_token = Str::random(50) . date('YmdHis');
+
+            $user = User::firstOrCreate([
                 'email' => $userGoogle->getEmail(),
-                'api_token' => Str::random(60),
+                'api_token' => $api_token,
                 'name' => $userGoogle->getName(),
                 'avatarURL' => $userGoogle->getAvatar(),
             ]);
-            return redirect('/home');
         }
+        Auth::login($user);
+        return view('callback', [
+            'name' => $user->name,
+            'token' => $user->api_token,
+        ]);
     }
 
 }

@@ -35,8 +35,8 @@ return [
     ],
 
     'google' => [
-        'client_id' => '',
-        'client_secret' => '',
-        'redirect' => 'http://local.task.com/auth/google/callback',
+        'client_id' => env('GOOGLE_ID'),
+        'client_secret' => env('GOOGLE_SECRET'),
+        'redirect' => env('GOOGLE_URL'),
     ],
 ];

@@ -57,9 +57,12 @@ class LoginController extends Controller
         $userGoogle = Socialite::driver('google')->stateless()->user();
         $user = User::where(['email' => $userGoogle->getEmail()])->first();
         if (!$user) {
+            //Generate random unique token
+            $api_token = Str::random(50) . date('YmdHis');
+
             $user = User::firstOrCreate([
                 'email' => $userGoogle->getEmail(),
-                'api_token' => Str::random(60),
+                'api_token' => $api_token,
                 'name' => $userGoogle->getName(),
                 'avatarURL' => $userGoogle->getAvatar(),
             ]);

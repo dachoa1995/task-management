@@ -4,9 +4,9 @@
         <div class="panel">
             <form class="form">
                 <div class="form__button">
-                    <button @click="login()" class="button button--inverse">
+                    <md-button @click="login()" class="md-raised md-accent">
                         Sign in with Google
-                    </button>
+                    </md-button>
                 </div>
             </form>
         </div>
@@ -28,7 +28,7 @@
         await this.$auth.authenticate('google');
       },
       async onMessage(e) {
-        if (e.origin !== window.origin || !e.data.token) {
+        if (e.origin !== window.origin || !e.data.api_token) {
           return
         }
         // save token and username to Vuex

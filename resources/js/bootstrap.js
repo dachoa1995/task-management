@@ -1,3 +1,4 @@
+import store from './store'
 
 window._ = require('lodash');
 
@@ -51,3 +52,11 @@ if (token) {
 //     broadcaster: 'pusher',
 //     key: 'your-pusher-key'
 // });
+
+
+window.axios.interceptors.request.use(config => {
+    const token = store.getters['auth/api_token'];
+    config.headers['Authorization'] = 'Bearer ' + token;
+
+    return config
+});

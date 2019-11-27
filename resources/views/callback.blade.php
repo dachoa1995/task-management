@@ -5,7 +5,7 @@
     <script>
       window.opener.postMessage(
         {
-          token: "{{ $token }}",
+          api_token: "{{ $api_token }}",
           name: "{{ $name }}"
         },
         "http://local.task.com/login/");

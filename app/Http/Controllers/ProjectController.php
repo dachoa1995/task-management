@@ -82,7 +82,7 @@ class ProjectController extends Controller
         $project_user = ProjectsUsers::where('project_id', '=', $project_id)
             ->where('user_id', '=', Auth::id());
 
-        if ($project->delete() && $project_user->delete()) {
+        if ($project_user->delete() && $project->delete()) {
             return response()->json([], 204);
         } else {
             return response()->json([

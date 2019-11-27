@@ -70,7 +70,7 @@ class LoginController extends Controller
         Auth::login($user);
         return view('callback', [
             'name' => $user->name,
-            'token' => $user->api_token,
+            'api_token' => $user->api_token,
         ]);
     }
 

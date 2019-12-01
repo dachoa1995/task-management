@@ -16,7 +16,7 @@ class StatusController extends Controller
     {
         $project_id = $request->input('project_id');
 
-        $status = Status::where('project_id', '=', $project_id)
+        $status = Status::with(['task'])->where('project_id', '=', $project_id)
             ->paginate(10);
 
         return StatusResource::collection($status);

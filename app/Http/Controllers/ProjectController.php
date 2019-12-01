@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Project;
 use App\ProjectsUsers;
+use App\User;
 use App\Http\Resources\Project as ProjectResource;
 use App\Http\Resources\ProjectList as ProjectList;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendMailable;
 
 class ProjectController extends Controller
 {
@@ -58,13 +61,14 @@ class ProjectController extends Controller
 
     /**
      * @param $id
-     * @return ProjectResource
      */
     public function show(Request $request)
     {
         $project_id = $request->input('project_id');
 
-        $project = Project::findOrFail($project_id);
+        $project = Project::with('projectsUsers.user:id,name,avatarURL')
+            ->where('id', '=', $project_id)
+            ->first();
 
         return new ProjectResource($project);
     }
@@ -94,13 +98,39 @@ class ProjectController extends Controller
     /*
      * プロジェクトに担当者をアサインする
      */
-    public function assign(Request $request) {
+    public function assign(Request $request)
+    {
         $project_id = $request->input('project_id');
-        $user_id = $request->input('user_id');
+        $email = $request->input('email');
+
+        // check if email is invalid
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return response()->json([
+                'error' => 'Email is invalid'
+            ], 500);
+        }
+
+        //check if user exist
+        $user = User::where(['email' => $email])->first();
+        if (is_null($user)) {
+            $user = User::firstOrCreate([
+                'email' => $email,
+            ]);
+        }
+
+        // check if user is assigned
+        $isAssigned = ProjectsUsers::where(['project_id' => $project_id, 'user_id' => $user->id])->exists();
+        if ($isAssigned) {
+            return response()->json([
+                'error' => 'User is already assigned'
+            ], 500);
+        }
+
         $project_user = new ProjectsUsers();
-        $project_user->user_id = $user_id;
+        $project_user->user_id = $user->id;
         $project_user->project_id = $project_id;
         if ($project_user->save()) {
+            Mail::to($email)->send(new SendMailable());
             return response()->json([], 204);
         }
 

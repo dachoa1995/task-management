@@ -8,7 +8,7 @@ class ProjectsUsers extends Model
 {
     public function user()
     {
-        return $this->belongsTo('App\User', 'foreign_key', 'user_id');
+        return $this->belongsTo('App\User');
     }
 
     public function project()

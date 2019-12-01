@@ -19,4 +19,9 @@ class Project extends Model
     {
         return $this->hasMany('App\ProjectsUsers');
     }
+
+    public function status()
+    {
+        return $this->hasMany('App\Status');
+    }
 }

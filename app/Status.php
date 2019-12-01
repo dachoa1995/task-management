@@ -12,4 +12,9 @@ class Status extends Model
     {
         return $this->belongsTo('App\Project');
     }
+
+    public function task()
+    {
+        return $this->hasMany('App\Task');
+    }
 }

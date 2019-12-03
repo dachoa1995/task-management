@@ -10,4 +10,9 @@ class Task extends Model
     {
         return $this->belongsTo('App\Status');
     }
+
+    public function tasksUsers()
+    {
+        return $this->hasMany('App\TasksUsers');
+    }
 }

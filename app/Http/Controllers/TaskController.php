@@ -76,7 +76,9 @@ class TaskController extends Controller
     {
         $task_id = $request->input('task_id');
 
-        $task = Task::findOrFail($task_id);
+        $task = Task::with('tasksUsers.user:id,name,avatarURL')
+            ->where('id', '=', $task_id)
+            ->first();
 
         // return single article as a resource
         return new TaskResource($task);
@@ -124,6 +126,41 @@ class TaskController extends Controller
 
         return response()->json([
             'error' => 'Can not assign user to task'
+        ], 500);
+
+    }
+
+    /*
+     * ワークフロー間を移動の保存
+     */
+    public function moveTask(Request $request) {
+        $task_id = $request->input('task_id');
+        $change_to_status_id = $request->input('change_to_status_id');
+
+        //check if status exist
+        $doesntStatusExists = Status::where(['id' => $change_to_status_id])->doesntExist();
+        if ($doesntStatusExists) {
+            return response()->json([
+                'error' => 'status is not exist'
+            ], 404);
+        }
+
+        //check if task exist
+        $task = Task::where(['id' => $task_id])->first();
+        if (is_null($task)) {
+            return response()->json([
+                'error' => 'task is not exist'
+            ], 404);
+        }
+
+        $task->status_id = $change_to_status_id;
+
+        if ($task->save()) {
+            return response()->json([], 204);
+        }
+
+        return response()->json([
+            'error' => 'Can not change status'
         ], 500);
 
     }

@@ -39,7 +39,7 @@
 
 <script>
   import Delete from '../components/Delete.vue'
-  import ProjectModal from '../components/ProjectModal.vue'
+  import ProjectModal from '../components/Modal/ProjectModal.vue'
 
   export default {
     name: 'Project_list',
@@ -64,6 +64,10 @@
 
     methods: {
       createProject() {
+        this.$refs.ProjectModal.setForm({
+          name: '',
+          description: '',
+        });
         this.$refs.ProjectModal.setConfigIsChange(false);
         this.$modal.show('project');
       },

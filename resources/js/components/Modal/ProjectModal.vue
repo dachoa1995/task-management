@@ -47,7 +47,7 @@
 
 <script>
   import {required} from 'vuelidate/lib/validators'
-  import Message from '../components/Message.vue'
+  import Message from '../../components/Message.vue'
 
   export default {
     name: "ProjectModal",

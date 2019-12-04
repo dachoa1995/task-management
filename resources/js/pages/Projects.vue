@@ -12,7 +12,7 @@
 
             <md-list-item v-for="(project, index) in projects" v-bind:key="project.id" :href="'project/' + project.id"
                           class="md-inset">
-                <div class="md-list-item-text">
+                <div class="md-list-item-text project-item-text">
                     <span>{{ project.name }}</span>
                     <span>{{ project.description }}</span>
                 </div>

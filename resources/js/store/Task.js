@@ -25,6 +25,9 @@ const actions = {
     const response = await axios.get('/api/comments', data);
     context.commit('initComments', response.data.data)
   },
+  async assign(context, data) {
+    await axios.post('/api/assign_task', data);
+  },
 };
 
 export default {

@@ -19,8 +19,8 @@
 
                             <div class="md-layout-item md-medium-size-100">
                                 <md-field :class="getValidationClass('description')">
-                                    <label for="description">説明文</label>
-                                    <md-input name="description" id="description" v-model="form.description"/>
+                                    <label>説明文</label>
+                                    <md-textarea v-model="form.description"></md-textarea>
                                     <span class="md-error" v-if="!$v.form.description.required">説明文が必要です。</span>
                                 </md-field>
                             </div>
@@ -35,7 +35,10 @@
                     <md-progress-bar md-mode="indeterminate" v-if="config.sending"/>
 
                     <md-card-actions>
-                        <md-button type="submit" class="md-primary" :disabled="config.sending">
+                        <md-button type="submit" class="md-primary" :disabled="config.sending" v-if="config.isChange">
+                            修正
+                        </md-button>
+                        <md-button type="submit" class="md-primary" :disabled="config.sending" v-if="!config.isChange">
                             作成
                         </md-button>
                     </md-card-actions>
@@ -64,6 +67,7 @@
         deadline: new Date()
       },
       config: {
+        isChange: false,
         sending: false,
       }
     }),
@@ -80,6 +84,9 @@
     methods: {
       setForm(value) {
         this.form = value;
+      },
+      setConfigIsChange(value) {
+        this.config.isChange = value;
       },
       getValidationClass(fieldName) {
         const field = this.$v.form[fieldName];

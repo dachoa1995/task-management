@@ -21,7 +21,7 @@
                             <h3>{{ task.name }}</h3>
                             <span>{{ task.description }}</span>
                         </div>
-                        <md-button md-menu-trigger class="md-icon-button" @click="showTaskDetail(task.id)">
+                        <md-button :href="'/project/' + project_id + '/' + task.id" target="_blank" md-menu-trigger class="md-icon-button">
                             <md-icon>launch</md-icon>
                         </md-button>
                     </div>
@@ -43,7 +43,6 @@
         <TaskModal ref="TaskModal"></TaskModal>
         <Delete ref="Delete"></Delete>
         <Message ref="Message"></Message>
-        <TaskDetail ref="TaskDetail"></TaskDetail>
     </div>
 </template>
 
@@ -53,7 +52,6 @@
   import StatusModal from '../components/Modal/StatusModal.vue'
   import TaskModal from '../components/Modal/TaskModal.vue'
   import Message from '../components/Message.vue'
-  import TaskDetail from '../components/TaskDetail.vue'
 
   export default {
     name: "Workflow",
@@ -63,7 +61,6 @@
       StatusModal,
       TaskModal,
       Message,
-      TaskDetail
     },
     data: () => ({
       project_id: '',
@@ -115,7 +112,7 @@
         this.$modal.show('taskModal');
       },
       moveTaskToAnotherWorkflow(log) {
-        if(log.added !== undefined) {
+        if (log.added !== undefined) {
           const status = log.added.element;
 
           //何のワークフローに移行されたか、取得
@@ -146,24 +143,6 @@
             });
           }
         }
-      },
-      async showTaskDetail(task_id) {
-        //タスク詳細を取得
-        await this.$store.dispatch('task/getTask', {
-          params: {
-            project_id: this.project_id,
-            task_id: task_id
-          }
-        });
-
-        //タスクでのコメントを取得
-
-        const task = this.$store.getters['task/task'];
-        this.$refs.TaskDetail.setProjectID(this.project_id);
-        this.$refs.TaskDetail.setTask(task);
-
-
-        this.$modal.show('taskDetail');
       }
     },
     computed: {

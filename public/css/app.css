@@ -201,3 +201,25 @@ ul {
   width: initial !important;
 }
 
+.project-item-text {
+  flex-direction: column !important;
+}
+
+.task-name {
+  margin-bottom: 3em;
+  font-size: 17px;
+}
+
+.task-content {
+  width: 65%;
+  display: inline-block !important;
+  overflow: auto;
+  margin-right: 2em !important;
+}
+
+.task-deadline {
+  width: 29%;
+  display: inline-block !important;
+  overflow: auto;
+}
+

@@ -45,6 +45,7 @@
     data: () => ({
       form: {
         project_id: '',
+        task_id: '',
         email: '',
       },
       config: {
@@ -90,10 +91,8 @@
       sendInvite() {
         //processing
         this.config.sending = true;
-        this.$store.dispatch('project/assign', {
-          'project_id': this.form.project_id,
-          'email': this.form.email
-        }).then(() => {
+        const actionURL = this.form.task_id === '' ? 'project/assign' : 'task/assign';
+        this.$store.dispatch(actionURL, this.form).then(() => {
           this.processAfterSave();
 
           this.$refs.Message.setValue({

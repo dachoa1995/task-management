@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Task;
 use App\Status;
 use App\TasksUsers;
+use App\User;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\Task as TaskResource;
 use DateTime;
@@ -107,7 +108,32 @@ class TaskController extends Controller
      */
     public function assign(Request $request) {
         $task_id = $request->input('task_id');
+        $email = $request->input('email');
 
+        // check if email is invalid
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return response()->json([
+                'error' => 'Email is invalid'
+            ], 500);
+        }
+
+        //check if user exist
+        $user = User::where(['email' => $email])->first();
+        if (is_null($user)) {
+            $user = User::firstOrCreate([
+                'email' => $email,
+            ]);
+        }
+
+        // check if user is assigned
+        $isAssigned = TasksUsers::where(['task_id' => $task_id, 'user_id' => $user->id])->exists();
+        if ($isAssigned) {
+            return response()->json([
+                'error' => 'User is already assigned'
+            ], 500);
+        }
+
+        // check if task exist
         $task = Task::where('id', '=', $task_id)
             ->doesntExist();
         if ($task) {
@@ -116,9 +142,8 @@ class TaskController extends Controller
             ], 404);
         }
 
-        $user_id = $request->input('user_id');
         $task_user = new TasksUsers();
-        $task_user->user_id = $user_id;
+        $task_user->user_id = $user->id;
         $task_user->task_id = $task_id;
         if ($task_user->save()) {
             return response()->json([], 204);

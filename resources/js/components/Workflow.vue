@@ -19,7 +19,7 @@
                     <div class="md-list-item-text">
                         <div>
                             <h3>{{ task.name }}</h3>
-                            <span>{{ task.description }}</span>
+                            <span class="description">{{ task.description }}</span>
                         </div>
                         <md-button :href="'/project/' + project_id + '/' + task.id" target="_blank" md-menu-trigger class="md-icon-button">
                             <md-icon>launch</md-icon>

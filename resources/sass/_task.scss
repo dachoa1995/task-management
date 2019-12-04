@@ -4,14 +4,27 @@
 }
 
 .task-content {
-  width: 65%;
   display: inline-block !important;
   overflow: auto;
-  margin-right: 2em !important
+  margin-left: 3em !important
 }
 
-.task-deadline {
-  width: 29%;
-  display: inline-block !important;
-  overflow: auto;
+.description {
+  word-wrap: break-word;
+  white-space: -moz-pre-wrap;
+  white-space: pre-wrap !important;
+}
+
+.task-content-header {
+  justify-content: space-between;
+}
+
+.task-name-header {
+  justify-content: space-between;
+  display: flex;
+}
+
+.task-action-button {
+  margin-right: 5em;
+  margin-top: 1em;
 }

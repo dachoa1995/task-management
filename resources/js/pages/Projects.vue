@@ -14,7 +14,7 @@
                           class="md-inset">
                 <div class="md-list-item-text project-item-text">
                     <span>{{ project.name }}</span>
-                    <span>{{ project.description }}</span>
+                    <span class="description">{{ project.description }}</span>
                 </div>
                 <md-button class="md-icon-button md-list-action" onclick='return false;'
                            @click='change_project(project.id, project.name, project.description)'>

@@ -5,6 +5,7 @@ const state = {
 const getters = {
   check: state => !! state.user,
   name: state => state.user ? state.user.name : '',
+  avatarURL: state => state.user ? state.user.avatarURL : '',
   api_token: state => state.user ? state.user.api_token : '',
 };
 

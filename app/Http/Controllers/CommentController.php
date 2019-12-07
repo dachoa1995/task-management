@@ -19,7 +19,8 @@ class CommentController extends Controller
     {
         $task_id = $request->input('task_id');
 
-        $tasks = Comment::where('task_id', '=', $task_id)
+        $tasks = Comment::with('user:id,name,avatarURL')
+            ->where('task_id', '=', $task_id)
             ->paginate(10);
 
         return CommentResource::collection($tasks);

@@ -1,15 +1,15 @@
 <template>
     <div>
-        <div class="viewport" v-for="(workflow, index) in status">
+        <div class="viewport" v-for="workflow in status">
             <md-toolbar :md-elevation="1">
                 <span class="md-title">{{workflow.name}}</span>
                 <md-menu md-size="medium" :md-offset-x="127" :md-offset-y="-36">
                     <md-button md-menu-trigger class="md-icon-button"
-                               @click="changeStatus(workflow.id, workflow.name)">
+                               @click="changeStatus(workflow)">
                         <md-icon>edit</md-icon>
                     </md-button>
                     <md-button md-menu-trigger class="md-icon-button"
-                               @click='deleteStatus(workflow.id, index)'>
+                               @click='deleteStatus(workflow.id)'>
                         <md-icon>delete_forever</md-icon>
                     </md-button>
                 </md-menu>
@@ -21,7 +21,7 @@
                             <h3>{{ task.name }}</h3>
                             <span class="description">{{ task.description }}</span>
                         </div>
-                        <md-button :href="'/project/' + project_id + '/' + task.id" target="_blank" md-menu-trigger class="md-icon-button">
+                        <md-button :href="'/project/' + project_id + '/' + task.id" md-menu-trigger class="md-icon-button">
                             <md-icon>launch</md-icon>
                         </md-button>
                     </div>
@@ -52,6 +52,7 @@
   import StatusModal from '../components/Modal/StatusModal.vue'
   import TaskModal from '../components/Modal/TaskModal.vue'
   import Message from '../components/Message.vue'
+  import {formatDate} from '../util';
 
   export default {
     name: "Workflow",
@@ -82,22 +83,19 @@
         this.$refs.StatusModal.setConfigIsChange(false);
         this.$modal.show('status');
       },
-      changeStatus(status_id, status_name) {
-        this.$refs.StatusModal.setForm({
-          project_id: this.project_id,
-          status_id: status_id,
-          name: status_name,
-        });
+      changeStatus(workflow) {
+        workflow.project_id = this.project_id;
+        workflow.status_id = workflow.id;
+        this.$refs.StatusModal.setForm(workflow);
         this.$refs.StatusModal.setConfigIsChange(true);
         this.$modal.show('status');
       },
-      deleteStatus(status_id, index) {
+      deleteStatus(status_id) {
         this.$refs.Delete.setValue({
           active: true,
           project_id: this.project_id,
           status_id: status_id,
-          action: 'delete_status',
-          index: index
+          action: 'deleteStatus',
         });
       },
       addTask(status_id) {
@@ -106,7 +104,7 @@
           status_id: status_id,
           name: '',
           description: '',
-          deadline: new Date()
+          deadline: formatDate(new Date())
         });
         this.$refs.TaskModal.setConfigIsChange(false);
         this.$modal.show('taskModal');

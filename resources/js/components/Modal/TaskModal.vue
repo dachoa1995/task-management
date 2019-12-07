@@ -52,6 +52,7 @@
 <script>
   import {required} from 'vuelidate/lib/validators'
   import Message from '../../components/Message.vue'
+  import {formatDate} from '../../util';
 
   export default {
     name: "TaskModal",
@@ -62,9 +63,10 @@
       form: {
         project_id: '',
         status_id: '',
+        task_id: '',
         name: '',
         description: '',
-        deadline: new Date()
+        deadline: formatDate(new Date())
       },
       config: {
         isChange: false,
@@ -105,13 +107,7 @@
         }
       },
       processAfterSave() {
-        //reset data
         this.config.sending = false;
-        this.form.project_id = '';
-        this.form.task_id = '';
-        this.form.name = '';
-        this.form.description = '';
-        this.form.deadline = new Date();
 
         //close modal
         this.$modal.hide('taskModal');
@@ -119,10 +115,8 @@
       saveTask() {
         //processing
         this.config.sending = true;
-        //format Date
-        const date = this.form.deadline;
-        this.form.deadline = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-        this.$store.dispatch('status/createTask', this.form).then(() => {
+        const actionURL = this.config.isChange ? 'task/changeTask' : 'status/createTask';
+        this.$store.dispatch(actionURL, this.form).then(() => {
           this.processAfterSave();
 
           this.$refs.Message.setValue({

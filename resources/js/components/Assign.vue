@@ -33,7 +33,7 @@
       task_id: ''
     }),
     methods: {
-      setValue(value) {
+      setProject(value) {
         this.project = value;
       },
       setTaskID(value) {

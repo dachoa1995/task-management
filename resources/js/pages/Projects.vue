@@ -10,18 +10,18 @@
 
         <md-list class="md-double-line" :disabled="loading">
 
-            <md-list-item v-for="(project, index) in projects" v-bind:key="project.id" :href="'project/' + project.id"
+            <md-list-item v-for="project in projects" v-bind:key="project.id" :href="'project/' + project.id"
                           class="md-inset">
                 <div class="md-list-item-text project-item-text">
                     <span>{{ project.name }}</span>
                     <span class="description">{{ project.description }}</span>
                 </div>
                 <md-button class="md-icon-button md-list-action" onclick='return false;'
-                           @click='change_project(project.id, project.name, project.description)'>
+                           @click='changeProject(project)'>
                     <md-icon>edit</md-icon>
                 </md-button>
                 <md-button class="md-icon-button md-list-action" onclick='return false;'
-                           @click='delete_project(project.id, index)'>
+                           @click='deleteProject(project.id)'>
                     <md-icon>delete_forever</md-icon>
                 </md-button>
             </md-list-item>
@@ -71,21 +71,17 @@
         this.$refs.ProjectModal.setConfigIsChange(false);
         this.$modal.show('project');
       },
-      change_project(id, name, description) {
-        this.$refs.ProjectModal.setForm({
-          project_id: id,
-          name: name,
-          description: description,
-        });
+      changeProject(project) {
+        project.project_id = project.id;
+        this.$refs.ProjectModal.setForm(project);
         this.$refs.ProjectModal.setConfigIsChange(true);
         this.$modal.show('project');
       },
-      delete_project(project_id, index) {
+      deleteProject(project_id) {
         this.$refs.Delete.setValue({
           active: true,
           project_id: project_id,
-          action: 'delete_project',
-          index: index
+          action: 'deleteProject',
         });
       },
     }

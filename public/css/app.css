@@ -214,6 +214,7 @@ ul {
   display: inline-block !important;
   overflow: auto;
   margin-left: 3em !important;
+  width: 90%;
 }
 
 .description {
@@ -234,5 +235,19 @@ ul {
 .task-action-button {
   margin-right: 5em;
   margin-top: 1em;
+}
+
+.comment {
+  margin: 3em;
+  display: flex;
+}
+
+.comment_avatar {
+  margin-top: 5px !important;
+}
+
+.comment_avatar_list {
+  margin-right: 0 !important;
+  margin-left: 1em !important;
 }
 

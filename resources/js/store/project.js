@@ -13,7 +13,8 @@ const mutations = {
   addProject(state, project) {
     state.projects.push(project);
   },
-  deleteProject(state, index) {
+  deleteProject(state, project_id) {
+    const index = state.projects.findIndex(project => project.id === project_id);
     state.projects.splice(index, 1);
   },
   changeProject(state, project) {
@@ -38,7 +39,7 @@ const actions = {
   },
   async deleteProject(context, data) {
     await axios.delete('/api/project', data);
-    context.commit('deleteProject', data.index)
+    context.commit('deleteProject', data.params.project_id)
   },
   async changeProject(context, data) {
     await axios.put('/api/project', data);

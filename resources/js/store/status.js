@@ -13,7 +13,8 @@ const mutations = {
   addStatus(state, status) {
     state.status.push(status);
   },
-  deleteStatus(state, index) {
+  deleteStatus(state, status_id) {
+    const index = state.status.findIndex(status => status.id === status_id);
     state.status.splice(index, 1);
   },
   changeStatus(state, status) {
@@ -49,7 +50,7 @@ const actions = {
   },
   async deleteStatus(context, data) {
     await axios.delete('/api/status', data);
-    context.commit('deleteStatus', data.index)
+    context.commit('deleteStatus', data.params.status_id)
   },
   async createTask(context, data) {
     const response = await axios.post('/api/task', data);

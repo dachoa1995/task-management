@@ -32,6 +32,7 @@
           'project_id': project_id
         }
       }).catch((e) => {
+        //アクセス権限が持っていなければ、プロジェクト一覧へ移行
         if (e.response.status === 401 || e.response.status === 403) {
           this.$router.push('/');
         }
@@ -44,7 +45,7 @@
         });
         this.project = this.$store.getters['project/projects'];
         this.status = this.$store.getters['status/status'];
-        this.$refs.Assign.setValue(this.project);
+        this.$refs.Assign.setProject(this.project);
         this.$refs.Workflow.setProjectID(project_id);
         this.$refs.Workflow.setStatus(this.status);
         this.loading = false;
@@ -57,9 +58,6 @@
       },
       status: [],
       loading: true,
-    }),
-    methods: {
-
-    },
+    })
   };
 </script>

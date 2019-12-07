@@ -86,9 +86,7 @@
         }
       },
       processAfterSave() {
-        //reset data
         this.config.sending = false;
-        this.form.name = '';
 
         //close modal
         this.$modal.hide('status');

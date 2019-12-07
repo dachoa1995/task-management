@@ -99,11 +99,7 @@
         }
       },
       processAfterSave() {
-        //reset data
         this.config.sending = false;
-        this.form.project_id = '';
-        this.form.name = '';
-        this.form.description = '';
 
         //close modal
         this.$modal.hide('project');

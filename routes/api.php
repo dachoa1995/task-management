@@ -23,67 +23,64 @@ Route::get('/user', function () {
 Route::middleware('auth:api')->get('projects', 'ProjectController@index');
 
 // プロジェクト詳細を取得
-Route::middleware('auth:api')->get('project', 'ProjectController@show')->middleware('projectAuth');
+Route::middleware('auth:api')->get('project', 'ProjectController@show');
 
 // プロジェクトを投稿
 Route::middleware('auth:api')->post('project', 'ProjectController@store');
 
 // プロジェクトを更新
-Route::middleware('auth:api')->put('project', 'ProjectController@store')->middleware('projectAuth');
+Route::middleware('auth:api')->put('project', 'ProjectController@store');
 
 // プロジェクトを削除
-Route::middleware('auth:api')->delete('project', 'ProjectController@destroy')->middleware('projectAuth');
+Route::middleware('auth:api')->delete('project', 'ProjectController@destroy');
 
 // プロジェクトに担当者をアサインする
-Route::middleware('auth:api')->post('assign_project', 'ProjectController@assign')->middleware('projectAuth');
+Route::middleware('auth:api')->post('assign_project', 'ProjectController@assign');
 
 
 // ワークフロー覧を取得
-Route::middleware('auth:api')->get('status_list', 'StatusController@index')->middleware('projectAuth');
-
-// ワークフロー詳細を取得
-Route::middleware('auth:api')->get('status', 'StatusController@show')->middleware('projectAuth');
+Route::middleware('auth:api')->get('status_list', 'StatusController@index');
 
 // ワークフローを投稿
-Route::middleware('auth:api')->post('status', 'StatusController@store')->middleware('projectAuth');
+Route::middleware('auth:api')->post('status', 'StatusController@store');
 
 // ワークフローを更新
-Route::middleware('auth:api')->put('status', 'StatusController@store')->middleware('projectAuth');
+Route::middleware('auth:api')->put('status', 'StatusController@store');
 
 // ワークフローを削除
-Route::middleware('auth:api')->delete('status', 'StatusController@destroy')->middleware('projectAuth');
+Route::middleware('auth:api')->delete('status', 'StatusController@destroy');
 
 
 // タスクー覧を取得
-Route::middleware('auth:api')->get('tasks', 'TaskController@index')->middleware('projectAuth');
+Route::middleware('auth:api')->get('tasks', 'TaskController@index');
 
 // タスク詳細を取得
-Route::middleware('auth:api')->get('task', 'TaskController@show')->middleware('projectAuth');
+Route::middleware('auth:api')->get('task', 'TaskController@show');
 
 // タスクを投稿
-Route::middleware('auth:api')->post('task', 'TaskController@store')->middleware('projectAuth');
+Route::middleware('auth:api')->post('task', 'TaskController@store');
 
 // タスクを更新
-Route::middleware('auth:api')->put('task', 'TaskController@store')->middleware('projectAuth');
+Route::middleware('auth:api')->put('task', 'TaskController@store');
 
 // タスクを削除
-Route::middleware('auth:api')->delete('task', 'TaskController@destroy')->middleware('projectAuth');
+Route::middleware('auth:api')->delete('task', 'TaskController@destroy');
 
 // タスクに担当者をアサインする
-Route::middleware('auth:api')->post('assign_task', 'TaskController@assign')->middleware('projectAuth');
+Route::middleware('auth:api')->post('assign_task', 'TaskController@assign');
 
 // タスクに担当者をアサインする
-Route::middleware('auth:api')->post('moveTask', 'TaskController@moveTask')->middleware('projectAuth');
+Route::middleware('auth:api')->post('moveTask', 'TaskController@moveTask');
 
 
 // タスクでコメントー覧を取得
-Route::middleware('auth:api')->get('comments', 'CommentController@index')->middleware('projectAuth');
+Route::middleware('auth:api')->get('comments', 'CommentController@index');
 
 // タスクでコメントを投稿
-Route::middleware('auth:api')->post('comment', 'CommentController@store')->middleware('projectAuth');
+Route::middleware('auth:api')->post('comment', 'CommentController@store');
 
 // タスクでコメントを更新
-Route::middleware('auth:api')->put('comment', 'CommentController@update')->middleware('projectAuth')->middleware('commentAuth');
+Route::middleware('auth:api')->put('comment', 'CommentController@update');
 
 // タスクでコメントを削除
-Route::middleware('auth:api')->delete('comment', 'CommentController@destroy')->middleware('projectAuth')->middleware('commentAuth');
+Route::middleware('auth:api')->delete('comment', 'CommentController@destroy');

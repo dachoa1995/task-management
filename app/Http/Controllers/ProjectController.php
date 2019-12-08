@@ -11,6 +11,7 @@ use App\Http\Resources\ProjectList as ProjectList;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendMailable;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectController extends Controller
 {
@@ -34,9 +35,16 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        $project_id = $request->input('project_id');
+        if ($request->isMethod('PUT')) {
+            $project_id = $request->input('project_id');
 
-        $project = $request->isMethod('PUT') ? Project::findOrFail($project_id) : new Project();
+            Gate::authorize('access-project', [$project_id]);
+
+            $project = Project::findOrFail($project_id);
+        } else {
+            $project = new Project();
+        }
+
 
         $project->name = $request->input('name');
         $project->description = $request->input('description');
@@ -66,6 +74,8 @@ class ProjectController extends Controller
     {
         $project_id = $request->input('project_id');
 
+        Gate::authorize('access-project', [$project_id]);
+
         $project = Project::with('projectsUsers.user:id,name,avatarURL')
             ->where('id', '=', $project_id)
             ->first();
@@ -80,6 +90,8 @@ class ProjectController extends Controller
     public function destroy(Request $request)
     {
         $project_id = $request->input('project_id');
+
+        Gate::authorize('access-project', [$project_id]);
 
         $project = Project::findOrFail($project_id);
 
@@ -101,6 +113,9 @@ class ProjectController extends Controller
     public function assign(Request $request)
     {
         $project_id = $request->input('project_id');
+
+        Gate::authorize('access-project', [$project_id]);
+
         $email = $request->input('email');
 
         // check if email is invalid

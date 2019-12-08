@@ -9,7 +9,7 @@ use App\TasksUsers;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\Task as TaskResource;
-use DateTime;
+use Illuminate\Support\Facades\Gate;
 
 class TaskController extends Controller
 {
@@ -18,6 +18,8 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
+        Gate::authorize('access-project', [$request->input('project_id')]);
+
         $status_id = $request->input('status_id');
 
         $tasks = Task::where('status_id', '=', $status_id)
@@ -33,6 +35,9 @@ class TaskController extends Controller
     {
         // ワークフローが存在しているか、チェック
         $project_id = $request->input('project_id');
+
+        Gate::authorize('access-project', [$project_id]);
+
         $status_id = $request->input('status_id');
         $status = Status::where('project_id', '=', $project_id)
             ->where('id', '=', $status_id)
@@ -75,6 +80,8 @@ class TaskController extends Controller
      */
     public function show(Request $request)
     {
+        Gate::authorize('access-project', [$request->input('project_id')]);
+
         $task_id = $request->input('task_id');
 
         $task = Task::with('tasksUsers.user:id,name,avatarURL')
@@ -87,6 +94,8 @@ class TaskController extends Controller
 
     public function destroy(Request $request)
     {
+        Gate::authorize('access-project', [$request->input('project_id')]);
+
         $task_id = $request->input('task_id');
 
         $task = Task::findOrFail($task_id);
@@ -98,7 +107,7 @@ class TaskController extends Controller
             return response()->json([], 204);
         } else {
             return response()->json([
-                'error' => 'Can not delete your project'
+                'error' => 'Can not delete your task'
             ], 500);
         }
     }
@@ -107,6 +116,8 @@ class TaskController extends Controller
      * タスクに担当者をアサインする
      */
     public function assign(Request $request) {
+        Gate::authorize('access-project', [$request->input('project_id')]);
+
         $task_id = $request->input('task_id');
         $email = $request->input('email');
 
@@ -159,6 +170,8 @@ class TaskController extends Controller
      * ワークフロー間を移動の保存
      */
     public function moveTask(Request $request) {
+        Gate::authorize('access-project', [$request->input('project_id')]);
+
         $task_id = $request->input('task_id');
         $change_to_status_id = $request->input('change_to_status_id');
 

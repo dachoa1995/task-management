@@ -1,10 +1,10 @@
 <template>
-    <div v-if="project.id !== ''">
-        <md-avatar class="md-avatar-icon" v-for="projects_user in project.projects_users"
-                   :key="projects_user.id">
-            <img v-if="projects_user.user.avatarURL !== null" :src="projects_user.user.avatarURL" alt="Avatar">
-            <md-icon v-if="projects_user.user.avatarURL === null">account_circle</md-icon>
-            <md-tooltip md-direction="top">{{projects_user.user.name || 'anonymous'}}</md-tooltip>
+    <div v-if="task.id !== ''">
+        <md-avatar class="md-avatar-icon" v-for="tasks_user in task.tasks_users"
+                   :key="tasks_user.id">
+            <img v-if="tasks_user.user.avatarURL !== null" :src="tasks_user.user.avatarURL" alt="Avatar">
+            <md-icon v-if="tasks_user.user.avatarURL === null">account_circle</md-icon>
+            <md-tooltip md-direction="top">{{tasks_user.user.name || 'anonymous'}}</md-tooltip>
         </md-avatar>
 
         <md-button class="md-fab md-mini md-primary assign-button" @click="assign()">
@@ -21,27 +21,23 @@
   import AssignModal from '../components/Modal/AssignModal.vue'
 
   export default {
-    name: "Assign",
+    name: "AssignTask",
     components: {
       AssignModal
     },
     data: () => ({
-      project: {
+      task: {
         id: '',
-        projects_users: []
+        tasks_users: []
       },
-      task_id: ''
     }),
     methods: {
-      setProject(value) {
-        this.project = value;
-      },
-      setTaskID(value) {
-        this.task_id = value;
+      setValue(value) {
+        this.task = value;
       },
       assign() {
         this.$refs.AssignModal.setForm({
-          project_id: this.project.id,
+          project_id: this.task.id,
           task_id: this.task_id,
           email: '',
         });

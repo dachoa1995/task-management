@@ -33,15 +33,15 @@ class CreateTables extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('project_id');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('project_id')->references('id')->on('projects');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             $table->timestamps();
         });
 
         Schema::create('status', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('project_id');
-            $table->foreign('project_id')->references('id')->on('projects');
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             $table->string('name', 50);
             $table->integer('order');
             $table->timestamps();
@@ -50,7 +50,7 @@ class CreateTables extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('status_id');
-            $table->foreign('status_id')->references('id')->on('status');
+            $table->foreign('status_id')->references('id')->on('status')->onDelete('cascade');
             $table->string('name', 50);
             $table->string('description', 500);
             $table->date('deadline');
@@ -61,8 +61,8 @@ class CreateTables extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('task_id');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('task_id')->references('id')->on('tasks');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');
             $table->string('content', 500);
             $table->timestamps();
         });
@@ -71,8 +71,8 @@ class CreateTables extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('task_id');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('task_id')->references('id')->on('tasks');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');
             $table->timestamps();
         });
     }

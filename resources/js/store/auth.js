@@ -5,6 +5,7 @@ const state = {
 const getters = {
   check: state => !! state.user,
   name: state => state.user ? state.user.name : '',
+  avatarURL: state => state.user ? state.user.avatarURL : '',
   api_token: state => state.user ? state.user.api_token : '',
 };
 
@@ -22,6 +23,10 @@ const actions = {
     const response = await axios.get('/api/user');
     const user = response.data || null;
     context.commit('setUser', user)
+  },
+  async logout (context) {
+    await axios.get('/logout');
+    context.commit('setUser', null)
   }
 };
 

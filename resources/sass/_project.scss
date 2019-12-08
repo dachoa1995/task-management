@@ -1,0 +1,80 @@
+.list-group {
+  min-height: 20px;
+}
+
+.list-group-item {
+  cursor: move;
+  border: 1px solid lightgray;
+  min-height: 100px;
+  margin-bottom: 1em;
+  padding: 1em;
+  font-size: 15px;
+}
+
+.viewport {
+  width: 365px;
+  display: inline-block;
+  vertical-align: top;
+  border: 1px solid lightgray;
+  margin-right: 1em;
+  margin-top: 1em;
+}
+
+ul {
+  list-style-type: none;
+  padding: 1em;
+}
+
+.add-more {
+  width: 365px;
+  height: 100px;
+  display: inline-block;
+  border: 1px dotted black;
+  text-align: center;
+  margin-right: 1em;
+  margin-top: 1em;
+}
+
+.add-button {
+  margin-top: 2em !important;
+}
+
+.add-task {
+  width: 365px;
+  height: 100px;
+  display: inline-block;
+  text-align: center;
+}
+
+.project-name {
+  margin-bottom: 3em;
+}
+
+.v--modal {
+  height: auto !important;
+}
+
+.assign-button {
+  margin: 0 !important;
+}
+
+.md-toolbar {
+  justify-content: space-between;
+}
+
+.md-datepicker-dialog  {
+  z-index: 99999 !important;
+}
+
+.md-list-item-text {
+  justify-content: space-between;
+  flex-direction: initial !important;
+}
+
+.md-list-item-text * {
+  width: initial !important;
+}
+
+.project-item-text {
+  flex-direction: column !important;
+}

@@ -1,0 +1,15 @@
+.container {
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 0 2%;
+
+  &--small {
+    margin: 0 auto;
+    max-width: 600px;
+  }
+}
+.panel {
+  border: 1px solid #dedede;
+  margin-top: 1rem;
+  padding: 1.5rem;
+}

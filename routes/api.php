@@ -72,6 +72,9 @@ Route::middleware('auth:api')->delete('task', 'TaskController@destroy')->middlew
 // タスクに担当者をアサインする
 Route::middleware('auth:api')->post('assign_task', 'TaskController@assign')->middleware('projectAuth');
 
+// タスクに担当者をアサインする
+Route::middleware('auth:api')->post('moveTask', 'TaskController@moveTask')->middleware('projectAuth');
+
 
 // タスクでコメントー覧を取得
 Route::middleware('auth:api')->get('comments', 'CommentController@index')->middleware('projectAuth');

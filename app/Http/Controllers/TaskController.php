@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Task;
 use App\Status;
 use App\TasksUsers;
+use App\User;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\Task as TaskResource;
 use DateTime;
@@ -76,7 +77,9 @@ class TaskController extends Controller
     {
         $task_id = $request->input('task_id');
 
-        $task = Task::findOrFail($task_id);
+        $task = Task::with('tasksUsers.user:id,name,avatarURL')
+            ->where('id', '=', $task_id)
+            ->first();
 
         // return single article as a resource
         return new TaskResource($task);
@@ -91,7 +94,7 @@ class TaskController extends Controller
         $task_user = TasksUsers::where('task_id', '=', $task_id)
             ->where('user_id', '=', Auth::id());
 
-        if ($task->delete() && $task_user->delete()) {
+        if ($task_user->delete() && $task->delete()) {
             return response()->json([], 204);
         } else {
             return response()->json([
@@ -105,7 +108,32 @@ class TaskController extends Controller
      */
     public function assign(Request $request) {
         $task_id = $request->input('task_id');
+        $email = $request->input('email');
 
+        // check if email is invalid
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return response()->json([
+                'error' => 'Email is invalid'
+            ], 500);
+        }
+
+        //check if user exist
+        $user = User::where(['email' => $email])->first();
+        if (is_null($user)) {
+            $user = User::firstOrCreate([
+                'email' => $email,
+            ]);
+        }
+
+        // check if user is assigned
+        $isAssigned = TasksUsers::where(['task_id' => $task_id, 'user_id' => $user->id])->exists();
+        if ($isAssigned) {
+            return response()->json([
+                'error' => 'User is already assigned'
+            ], 500);
+        }
+
+        // check if task exist
         $task = Task::where('id', '=', $task_id)
             ->doesntExist();
         if ($task) {
@@ -114,9 +142,8 @@ class TaskController extends Controller
             ], 404);
         }
 
-        $user_id = $request->input('user_id');
         $task_user = new TasksUsers();
-        $task_user->user_id = $user_id;
+        $task_user->user_id = $user->id;
         $task_user->task_id = $task_id;
         if ($task_user->save()) {
             return response()->json([], 204);
@@ -124,6 +151,41 @@ class TaskController extends Controller
 
         return response()->json([
             'error' => 'Can not assign user to task'
+        ], 500);
+
+    }
+
+    /*
+     * ワークフロー間を移動の保存
+     */
+    public function moveTask(Request $request) {
+        $task_id = $request->input('task_id');
+        $change_to_status_id = $request->input('change_to_status_id');
+
+        //check if status exist
+        $doesntStatusExists = Status::where(['id' => $change_to_status_id])->doesntExist();
+        if ($doesntStatusExists) {
+            return response()->json([
+                'error' => 'status is not exist'
+            ], 404);
+        }
+
+        //check if task exist
+        $task = Task::where(['id' => $task_id])->first();
+        if (is_null($task)) {
+            return response()->json([
+                'error' => 'task is not exist'
+            ], 404);
+        }
+
+        $task->status_id = $change_to_status_id;
+
+        if ($task->save()) {
+            return response()->json([], 204);
+        }
+
+        return response()->json([
+            'error' => 'Can not change status'
         ], 500);
 
     }

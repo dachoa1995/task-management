@@ -11,6 +11,7 @@
 |
 */
 
+Route::get('logout', 'Auth\LoginController@logout');
 Route::get('auth/google', 'Auth\LoginController@redirectToProvider');
 Route::get('auth/google/callback', 'Auth\LoginController@handleProviderCallback');
 

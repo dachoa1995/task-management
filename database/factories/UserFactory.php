@@ -19,7 +19,7 @@ use Faker\Generator as Faker;
 $factory->define(User::class, function (Faker $faker) {
     return [
         'email' => $faker->unique()->safeEmail,
-        'api_token' => $faker->macPlatformToken,
+        'api_token' => Str::random(60) . date('YmdHis'),
         'name' => $faker->name,
         'avatarURL' => $faker->url,
     ];

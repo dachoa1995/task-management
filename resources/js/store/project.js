@@ -14,9 +14,8 @@ const mutations = {
     state.projects.push(project);
   },
   deleteProject(state, project_id) {
-    state.projects = state.projects.filter((record) => {
-      return record.id !== project_id
-    })
+    const index = state.projects.findIndex(project => project.id === project_id);
+    state.projects.splice(index, 1);
   },
   changeProject(state, project) {
     state.projects = state.projects.map((record) => {
@@ -46,6 +45,14 @@ const actions = {
     await axios.put('/api/project', data);
     context.commit('changeProject', data)
   },
+  async getProjectDetail(context, data) {
+    const response = await axios.get('/api/project', data);
+    context.commit('initProject', response.data.data)
+  },
+  async assign(context, data) {
+    await axios.post('/api/assign_project', data);
+  },
+
 };
 
 export default {

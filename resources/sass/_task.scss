@@ -1,0 +1,31 @@
+.task-name {
+  margin-bottom: 3em;
+  font-size: 17px;
+}
+
+.task-content {
+  display: inline-block !important;
+  overflow: auto;
+  margin-left: 3em !important;
+  width: 90%;
+}
+
+.description {
+  word-wrap: break-word;
+  white-space: -moz-pre-wrap;
+  white-space: pre-wrap !important;
+}
+
+.task-content-header {
+  justify-content: space-between;
+}
+
+.task-name-header {
+  justify-content: space-between;
+  display: flex;
+}
+
+.task-action-button {
+  margin-right: 5em;
+  margin-top: 1em;
+}

@@ -1,8 +1,9 @@
-// Fonts
-@import url('https://fonts.googleapis.com/css?family=Nunito');
-
-// Variables
-@import 'variables';
-
-// Bootstrap
-@import "~bootstrap-sass/assets/stylesheets/bootstrap";
+@import "base";
+@import "container";
+@import "grid";
+@import "navbar";
+@import "footer";
+@import "form";
+@import "project";
+@import "task";
+@import "comment";

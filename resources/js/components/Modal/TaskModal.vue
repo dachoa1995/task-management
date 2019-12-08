@@ -1,10 +1,10 @@
 <template>
     <div>
-        <modal name="project">
-            <form novalidate class="md-layout" @submit.prevent="validateProject">
+        <modal name="taskModal">
+            <form novalidate class="md-layout" @submit.prevent="validateTask">
                 <md-card class="md-layout-item md-size-100 md-small-size-100">
                     <md-card-header>
-                        <div class="md-title">プロジェクト</div>
+                        <div class="md-title">タスク</div>
                     </md-card-header>
 
                     <md-card-content>
@@ -19,23 +19,27 @@
 
                             <div class="md-layout-item md-medium-size-100">
                                 <md-field :class="getValidationClass('description')">
-                                    <label for="description">説明文</label>
-                                    <md-input name="description" id="description" v-model="form.description"/>
+                                    <label>説明文</label>
+                                    <md-textarea v-model="form.description"></md-textarea>
                                     <span class="md-error" v-if="!$v.form.description.required">説明文が必要です。</span>
                                 </md-field>
+                            </div>
+
+                            <div class="md-layout-item md-medium-size-100">
+                                <md-datepicker v-model="form.deadline" md-immediately>
+                                    <label>期限日</label>
+                                </md-datepicker>
                             </div>
                         </div>
                     </md-card-content>
                     <md-progress-bar md-mode="indeterminate" v-if="config.sending"/>
 
                     <md-card-actions>
-                        <md-button type="submit" class="md-primary" :disabled="config.sending"
-                                   v-if="!config.isChange">
-                            作成
+                        <md-button type="submit" class="md-primary" :disabled="config.sending" v-if="config.isChange">
+                            修正
                         </md-button>
-                        <md-button type="submit" class="md-primary" :disabled="config.sending"
-                                   v-if="config.isChange">
-                            編集
+                        <md-button type="submit" class="md-primary" :disabled="config.sending" v-if="!config.isChange">
+                            作成
                         </md-button>
                     </md-card-actions>
                 </md-card>
@@ -47,22 +51,26 @@
 
 <script>
   import {required} from 'vuelidate/lib/validators'
-  import Message from '../components/Message.vue'
+  import Message from '../../components/Message.vue'
+  import {formatDate} from '../../util';
 
   export default {
-    name: "ProjectModal",
+    name: "TaskModal",
     components: {
       Message
     },
     data: () => ({
       form: {
         project_id: '',
+        status_id: '',
+        task_id: '',
         name: '',
         description: '',
+        deadline: formatDate(new Date())
       },
       config: {
+        isChange: false,
         sending: false,
-        isChange: false
       }
     }),
     validations: {
@@ -72,7 +80,7 @@
         },
         description: {
           required,
-        },
+        }
       },
     },
     methods: {
@@ -91,34 +99,30 @@
           }
         }
       },
-      validateProject() {
+      validateTask() {
         this.$v.$touch();
 
         if (!this.$v.$invalid) {
-          this.saveProject()
+          this.saveTask()
         }
       },
       processAfterSave() {
-        //reset data
         this.config.sending = false;
-        this.form.project_id = '';
-        this.form.name = '';
-        this.form.description = '';
 
         //close modal
-        this.$modal.hide('project');
+        this.$modal.hide('taskModal');
       },
-      saveProject() {
+      saveTask() {
         //processing
         this.config.sending = true;
-        const actionURL = this.config.isChange ? 'project/changeProject' : 'project/createProject';
+        const actionURL = this.config.isChange ? 'task/changeTask' : 'status/createTask';
         this.$store.dispatch(actionURL, this.form).then(() => {
           this.processAfterSave();
 
           this.$refs.Message.setValue({
             active: true,
             title: 'Success!',
-            content: 'プロジェクトを保存しました。'
+            content: 'タスクを保存しました。'
           });
         }).catch((e) => {
           console.log(e);
@@ -127,7 +131,7 @@
           this.$refs.Message.setValue({
             active: true,
             title: 'Error!',
-            content: 'エラーでプロジェクトが保存出来ませんでした。'
+            content: 'エラーでタスクが保存出来ませんでした。'
           });
         });
       },

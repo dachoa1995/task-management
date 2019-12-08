@@ -1,0 +1,12 @@
+.comment {
+  margin: 3em;
+  display: flex;
+
+  &_avatar {
+    margin-top: 5px !important;
+    &_list {
+      margin-right: 0 !important;
+      margin-left: 1em !important;
+    }
+  }
+}

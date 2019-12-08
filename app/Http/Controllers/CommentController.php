@@ -8,7 +8,7 @@ use App\Task;
 use App\Comment;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\Comment as CommentResource;
-
+use Illuminate\Support\Facades\Gate;
 
 class CommentController extends Controller
 {
@@ -17,6 +17,8 @@ class CommentController extends Controller
      */
     public function index(Request $request)
     {
+        Gate::authorize('access-project', [$request->input('project_id')]);
+
         $task_id = $request->input('task_id');
 
         $tasks = Comment::with('user:id,name,avatarURL')
@@ -31,6 +33,8 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
+        Gate::authorize('access-project', [$request->input('project_id')]);
+
         //タスクが存在しているか、チェック
         $task_id = $request->input('task_id');
         $task = Task::where('id', '=', $task_id)
@@ -61,9 +65,14 @@ class CommentController extends Controller
      */
     public function update(Request $request)
     {
+        Gate::authorize('access-project', [$request->input('project_id')]);
+
         $comment_id = $request->input('comment_id');
 
         $update_comment = Comment::findOrFail($comment_id);
+
+        Gate::authorize('update-comment', [$update_comment]);
+
         $update_comment->content = $request->input('content');
 
         if ($update_comment->save()) {
@@ -80,9 +89,13 @@ class CommentController extends Controller
      */
     public function destroy(Request $request)
     {
+        Gate::authorize('access-project', [$request->input('project_id')]);
+
         $comment_id = $request->input('comment_id');
 
         $comment = Comment::findOrFail($comment_id);
+
+        Gate::authorize('update-comment', [$comment]);
 
         if ($comment->delete()) {
             return response()->json([], 204);

@@ -6,6 +6,7 @@ use App\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\Status as StatusResource;
+use Illuminate\Support\Facades\Gate;
 
 class StatusController extends Controller
 {
@@ -15,6 +16,8 @@ class StatusController extends Controller
     public function index(Request $request)
     {
         $project_id = $request->input('project_id');
+
+        Gate::authorize('access-project', [$project_id]);
 
         $status = Status::with(['task'])->where('project_id', '=', $project_id)
             ->paginate(10);
@@ -27,11 +30,15 @@ class StatusController extends Controller
      */
     public function store(Request $request)
     {
+        $project_id = $request->input('project_id');
+
+        Gate::authorize('access-project', [$project_id]);
+
         $status_id = $request->input('status_id');
 
         $status = $request->isMethod('PUT') ? Status::findOrFail($status_id) : new Status();
 
-        $status->project_id = $request->input('project_id');
+        $status->project_id = $project_id;
         $status->name = $request->input('name');
         $status->order = $request->input('order');
 
@@ -44,18 +51,6 @@ class StatusController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Request $request)
-    {
-        $status_id = $request->input('status_id');
-
-        $status = Status::findOrFail($status_id);
-
-        return new StatusResource($status);
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
@@ -63,6 +58,8 @@ class StatusController extends Controller
      */
     public function destroy(Request $request)
     {
+        Gate::authorize('access-project', [$request->input('project_id')]);
+
         $status_id = $request->input('status_id');
 
         $status = Status::findOrFail($status_id);

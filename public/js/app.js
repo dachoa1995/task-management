@@ -2599,6 +2599,8 @@ __webpack_require__.r(__webpack_exports__);
           title: 'Success!',
           content: 'プロジェクトを保存しました。'
         });
+
+        _this.$emit('updateProject', '');
       })["catch"](function (e) {
         console.log(e);
 
@@ -2734,6 +2736,8 @@ __webpack_require__.r(__webpack_exports__);
           title: 'Success!',
           content: 'ワークフローを保存しました。'
         });
+
+        _this.$emit('updateStatus', '');
       })["catch"](function (e) {
         console.log(e);
 
@@ -2917,7 +2921,14 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 //
 //
 //
@@ -2942,6 +2953,36 @@ __webpack_require__.r(__webpack_exports__);
     username: function username() {
       return this.$store.getters['auth/name'];
     }
+  },
+  methods: {
+    logout: function () {
+      var _logout = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.next = 2;
+                return this.$store.dispatch('auth/logout');
+
+              case 2:
+                this.$router.push('/login');
+
+              case 3:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function logout() {
+        return _logout.apply(this, arguments);
+      }
+
+      return logout;
+    }()
   }
 });
 
@@ -3047,6 +3088,9 @@ __webpack_require__.r(__webpack_exports__);
       });
       this.$refs.StatusModal.setConfigIsChange(false);
       this.$modal.show('status');
+    },
+    updateStatus: function updateStatus() {
+      this.status = this.$store.getters['status/status'];
     },
     changeStatus: function changeStatus(workflow) {
       workflow.project_id = this.project_id;
@@ -3479,6 +3523,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         project_id: project_id,
         action: 'deleteProject'
       });
+    },
+    updateProject: function updateProject() {
+      this.projects = this.$store.getters['project/projects'];
     }
   }
 });
@@ -44313,27 +44360,41 @@ var render = function() {
         _vm._v("\n        Task Management\n    ")
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "navbar__menu" }, [
-        _vm.isLogin
-          ? _c("span", { staticClass: "navbar__item" }, [
-              _vm._v("\n            " + _vm._s(_vm.username) + "\n        ")
-            ])
-          : _c(
-              "div",
-              { staticClass: "navbar__item" },
-              [
-                _c(
-                  "RouterLink",
-                  {
-                    staticClass: "button button--link",
-                    attrs: { to: "/login" }
-                  },
-                  [_vm._v("\n                Login / Register\n            ")]
-                )
-              ],
-              1
-            )
-      ])
+      _c(
+        "div",
+        { staticClass: "navbar__menu" },
+        [
+          _vm.isLogin
+            ? _c(
+                "md-menu",
+                {
+                  attrs: {
+                    "md-size": "medium",
+                    "md-align-trigger": "",
+                    "md-direction": "top-end"
+                  }
+                },
+                [
+                  _c("md-button", { attrs: { "md-menu-trigger": "" } }, [
+                    _vm._v(_vm._s(_vm.username))
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "md-menu-content",
+                    [
+                      _c("md-menu-item", { on: { click: _vm.logout } }, [
+                        _vm._v("ログアウト")
+                      ])
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            : _vm._e()
+        ],
+        1
+      )
     ],
     1
   )
@@ -44520,7 +44581,10 @@ var render = function() {
           )
         : _vm._e(),
       _vm._v(" "),
-      _c("StatusModal", { ref: "StatusModal" }),
+      _c("StatusModal", {
+        ref: "StatusModal",
+        on: { updateStatus: _vm.updateStatus }
+      }),
       _vm._v(" "),
       _c("TaskModal", { ref: "TaskModal" }),
       _vm._v(" "),
@@ -44666,7 +44730,10 @@ var render = function() {
       _c(
         "div",
         [
-          _c("ProjectModal", { ref: "ProjectModal" }),
+          _c("ProjectModal", {
+            ref: "ProjectModal",
+            on: { updateProject: _vm.updateProject }
+          }),
           _vm._v(" "),
           _c(
             "md-button",
@@ -100618,6 +100685,34 @@ var actions = {
     }
 
     return currentUser;
+  }(),
+  logout: function () {
+    var _logout = _asyncToGenerator(
+    /*#__PURE__*/
+    _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(context) {
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              _context3.next = 2;
+              return axios.get('/logout');
+
+            case 2:
+              context.commit('setUser', null);
+
+            case 3:
+            case "end":
+              return _context3.stop();
+          }
+        }
+      }, _callee3);
+    }));
+
+    function logout(_x4) {
+      return _logout.apply(this, arguments);
+    }
+
+    return logout;
   }()
 };
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -101037,6 +101132,7 @@ var mutations = {
     state.status = status;
   },
   addStatus: function addStatus(state, status) {
+    status.task = [];
     state.status.push(status);
   },
   deleteStatus: function deleteStatus(state, status_id) {

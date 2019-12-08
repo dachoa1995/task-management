@@ -39,7 +39,7 @@
                 <md-icon :disabled="loading">add</md-icon>
             </md-button>
         </div>
-        <StatusModal ref="StatusModal"></StatusModal>
+        <StatusModal ref="StatusModal" v-on:updateStatus="updateStatus"></StatusModal>
         <TaskModal ref="TaskModal"></TaskModal>
         <Delete ref="Delete"></Delete>
         <Message ref="Message"></Message>
@@ -82,6 +82,9 @@
         });
         this.$refs.StatusModal.setConfigIsChange(false);
         this.$modal.show('status');
+      },
+      updateStatus() {
+        this.status = this.$store.getters['status/status'];
       },
       changeStatus(workflow) {
         workflow.project_id = this.project_id;

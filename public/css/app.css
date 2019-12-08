@@ -26,6 +26,10 @@ img {
   max-width: 100%;
 }
 
+.md-menu-content-top-end {
+  top: -44px !important;
+}
+
 .container {
   margin: 0 auto;
   max-width: 1200px;

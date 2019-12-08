@@ -11,6 +11,7 @@ const mutations = {
     state.status = status;
   },
   addStatus(state, status) {
+    status.task = [];
     state.status.push(status);
   },
   deleteStatus(state, status_id) {

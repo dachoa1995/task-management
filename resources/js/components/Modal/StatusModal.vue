@@ -103,6 +103,7 @@
             title: 'Success!',
             content: 'ワークフローを保存しました。'
           });
+          this.$emit('updateStatus', '')
         }).catch((e) => {
           console.log(e);
           this.processAfterSave();

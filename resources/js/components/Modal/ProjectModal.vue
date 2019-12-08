@@ -116,6 +116,7 @@
             title: 'Success!',
             content: 'プロジェクトを保存しました。'
           });
+          this.$emit('updateProject', '')
         }).catch((e) => {
           console.log(e);
           this.processAfterSave();

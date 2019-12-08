@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>
-            <ProjectModal ref="ProjectModal"></ProjectModal>
+            <ProjectModal ref="ProjectModal" v-on:updateProject="updateProject"></ProjectModal>
 
             <md-button @click="createProject()" class="md-fab md-mini md-primary">
                 <md-icon>add</md-icon>
@@ -84,6 +84,9 @@
           action: 'deleteProject',
         });
       },
+      updateProject() {
+        this.projects = this.$store.getters['project/projects'];
+      }
     }
   }
 </script>

@@ -6,11 +6,13 @@ import Projects from './pages/Projects.vue'
 import Login from './pages/Login.vue'
 import ProjectDetail from './pages/ProjectDetail.vue'
 import taskDetail from './pages/TaskDetail.vue'
-import store from './store'
+import {getCookieValue} from './util'
 
 // VueRouterプラグインを使用する
 // これによって<RouterView />コンポーネントなどを使うことができる
 Vue.use(VueRouter);
+
+const hasToken = getCookieValue('api_token') !== '';
 
 // パスとコンポーネントのマッピング
 const routes = [
@@ -18,7 +20,7 @@ const routes = [
     path: '/',
     component: Projects,
     beforeEnter(to, from, next) {
-      if (!store.getters['auth/check']) {
+      if (!hasToken) {
         next('/login')
       }
 
@@ -29,7 +31,7 @@ const routes = [
     path: '/login',
     component: Login,
     beforeEnter(to, from, next) {
-      if (store.getters['auth/check']) {
+      if (hasToken) {
         next('/')
       }
 
@@ -40,7 +42,7 @@ const routes = [
     path: '/project/:id',
     component: ProjectDetail,
     beforeEnter(to, from, next) {
-      if (!store.getters['auth/check']) {
+      if (!hasToken) {
         next('/login')
       }
 
@@ -51,7 +53,7 @@ const routes = [
     path: '/project/:id/:taskID',
     component: taskDetail,
     beforeEnter(to, from, next) {
-      if (!store.getters['auth/check']) {
+      if (!hasToken) {
         next('/login')
       }
 

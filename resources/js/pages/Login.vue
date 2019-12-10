@@ -35,7 +35,10 @@
         await this.$store.dispatch('auth/login', e.data);
 
         // トップページに移動する
-        this.$router.push('/');
+        setTimeout(() =>
+          this.$router.push('/'),
+          500
+        );
       }
 
     }

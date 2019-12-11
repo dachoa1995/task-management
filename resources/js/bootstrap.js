@@ -1,4 +1,4 @@
-import {getCookieValue} from './util'
+import store from './store'
 
 window._ = require('lodash');
 
@@ -55,7 +55,7 @@ if (token) {
 
 
 window.axios.interceptors.request.use(config => {
-    const token = getCookieValue('api_token');
+    const token = store.getters['auth/api_token'];
     config.headers['Authorization'] = 'Bearer ' + token;
 
     return config

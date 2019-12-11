@@ -1,5 +1,3 @@
-import {setCookie} from '../util'
-
 const state = {
   user: null
 };
@@ -19,8 +17,7 @@ const mutations = {
 
 const actions = {
   async login (context, data) {
-    context.commit('setUser', data);
-    setCookie('api_token', data.api_token, 1);
+    context.commit('setUser', data)
   },
   async currentUser (context) {
     const response = await axios.get('/api/user');

@@ -36,9 +36,7 @@
         switch (this.delete_modal.action) {
           case 'deleteProject':
             this.$store.dispatch('project/deleteProject', {
-              params: {
                 'project_id': this.delete_modal.project_id
-              },
             }).then(() => {
               this.$refs.Message.setValue({
                 active: true,
@@ -56,10 +54,8 @@
             break;
           case 'deleteStatus':
             this.$store.dispatch('status/deleteStatus', {
-              params: {
                 'project_id': this.delete_modal.project_id,
-                'status_id': this.delete_modal.status_id
-              },
+                'status_id': this.delete_modal.status_id,
             }).then(() => {
               this.$refs.Message.setValue({
                 active: true,
@@ -76,10 +72,8 @@
             break;
           case 'deleteTask':
             this.$store.dispatch('task/deleteTask', {
-              params: {
                 'project_id': this.delete_modal.project_id,
                 'task_id': this.delete_modal.task_id
-              },
             }).then(() => {
               this.$refs.Message.setValue({
                 active: true,

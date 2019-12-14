@@ -1,16 +1,13 @@
 <template>
     <nav class="navbar">
-        <RouterLink class="navbar__brand" to="/">
+        <a href="/" class="navbar__brand">
             Task Management
-        </RouterLink>
-        <div class="navbar__menu">
-            <md-menu v-if="isLogin" md-size="medium" md-align-trigger md-direction="top-end">
-                <md-button md-menu-trigger>{{ username }}</md-button>
+        </a>
 
-                <md-menu-content>
-                    <md-menu-item @click="logout">ログアウト</md-menu-item>
-                </md-menu-content>
-            </md-menu>
+        <div class="navbar__menu">
+            <div v-if="isLogin">
+                <a class="logout-button" @click="logout">ログアウト</a>
+            </div>
         </div>
     </nav>
 </template>
@@ -18,7 +15,7 @@
   export default {
     computed: {
       isLogin() {
-        return this.$store.getters['auth/check']
+        return this.$store.getters['auth/isLogin']
       },
       username() {
         return this.$store.getters['auth/name']
@@ -28,7 +25,8 @@
       async logout() {
         await this.$store.dispatch('auth/logout');
 
-        this.$router.push('/login');
+        window.location.href = '/login';
+        //this.$router.push('/login');
       }
     }
   }

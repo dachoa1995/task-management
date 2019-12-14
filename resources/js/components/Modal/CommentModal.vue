@@ -9,7 +9,7 @@
                 </md-avatar>
                 <div class="md-layout-item md-medium-size-80">
                     <md-field :class="getValidationClass('content')">
-                        <label>コメント</label>
+                        <label>コメント（必要）</label>
                         <md-textarea v-model="form.content"></md-textarea>
                         <span class="md-error" v-if="!$v.form.content.required">説明文が必要です。</span>
                     </md-field>
@@ -73,7 +73,7 @@
       },
       processAfterSave() {
         this.config.sending = false;
-        this.form.content = '';
+        this.form.content = ' ';
       },
       saveComment() {
         this.config.sending = true;

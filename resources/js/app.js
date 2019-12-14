@@ -14,12 +14,12 @@ import Vuelidate from 'vuelidate'
 
 Vue.use(VueAxios, axios);
 Vue.use(VueAuthenticate, {
-  baseUrl: 'http://local.task.com/',
+  baseUrl: 'https://task-management-oss.000webhostapp.com/',
 
   providers: {
     google: {
-      clientId: 'your google client ID',
-      redirectUri: 'http://local.task.com/auth/google/callback'
+      clientId: '723569059770-uluu31hlfll07sil7meqa75up3ip0upr.apps.googleusercontent.com',
+      redirectUri: 'https://task-management-oss.000webhostapp.com/auth/google/callback'
     }
   }
 });
@@ -29,8 +29,6 @@ Vue.use(Vuelidate);
 
 const createApp = async () => {
   // ログインチェックしてからアプリを生成する
-  await store.dispatch('auth/currentUser');
-
   new Vue({
     el: '#app',
     router,

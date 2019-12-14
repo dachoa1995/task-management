@@ -1,6 +1,7 @@
 <template>
     <div>
         <div>
+            <h1>プロジェクト一覧</h1>
             <ProjectModal ref="ProjectModal" v-on:updateProject="updateProject"></ProjectModal>
 
             <md-button @click="createProject()" class="md-fab md-mini md-primary">

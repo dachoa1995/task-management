@@ -9,7 +9,7 @@
 
         <md-button class="md-fab md-mini md-primary assign-button" @click="assign()">
             <md-avatar class="md-avatar-icon md-primary">
-                <md-icon>add</md-icon>
+                <md-icon>person_add</md-icon>
             </md-avatar>
         </md-button>
 

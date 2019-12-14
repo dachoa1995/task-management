@@ -38,11 +38,11 @@ const actions = {
     context.commit('addProject', response.data.data)
   },
   async deleteProject(context, data) {
-    await axios.delete('/api/project', data);
-    context.commit('deleteProject', data.params.project_id)
+    await axios.post('/api/delete_project', data);
+    context.commit('deleteProject', data.project_id)
   },
   async changeProject(context, data) {
-    await axios.put('/api/project', data);
+    await axios.post('/api/change_project', data);
     context.commit('changeProject', data)
   },
   async getProjectDetail(context, data) {

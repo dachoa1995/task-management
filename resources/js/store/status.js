@@ -46,12 +46,12 @@ const actions = {
     context.commit('addStatus', response.data.data)
   },
   async changeStatus(context, data) {
-    const response = await axios.put('/api/status', data);
+    const response = await axios.post('/api/change_status', data);
     context.commit('changeStatus', response.data.data)
   },
   async deleteStatus(context, data) {
-    await axios.delete('/api/status', data);
-    context.commit('deleteStatus', data.params.status_id)
+    await axios.post('/api/delete_status', data);
+    context.commit('deleteStatus', data.status_id)
   },
   async createTask(context, data) {
     const response = await axios.post('/api/task', data);

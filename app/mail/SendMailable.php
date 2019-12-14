@@ -27,6 +27,7 @@ class SendMailable extends Mailable
      */
     public function build()
     {
-        return $this->view('mail.inviteUserToProject');
+        return $this->view('mail.inviteUserToProject')
+            ->subject('タスク管理システムでのプロジェクトに招待されました');
     }
 }

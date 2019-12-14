@@ -49,6 +49,27 @@ class StatusController extends Controller
             'error' => 'Can not save your status'
         ], 500);
     }
+    public function update(Request $request)
+    {
+        $project_id = $request->input('project_id');
+
+        Gate::authorize('access-project', [$project_id]);
+
+        $status_id = $request->input('status_id');
+
+        $status = Status::findOrFail($status_id);
+
+        $status->project_id = $project_id;
+        $status->name = $request->input('name');
+        $status->order = $request->input('order');
+
+        if ($status->save()) {
+            return new StatusResource($status);
+        }
+        return response()->json([
+            'error' => 'Can not save your status'
+        ], 500);
+    }
 
     /**
      * Remove the specified resource from storage.

@@ -75,6 +75,50 @@ class TaskController extends Controller
         ], 500);
     }
 
+    public function update(Request $request)
+    {
+        // ワークフローが存在しているか、チェック
+        $project_id = $request->input('project_id');
+
+        Gate::authorize('access-project', [$project_id]);
+
+        $status_id = $request->input('status_id');
+        $status = Status::where('project_id', '=', $project_id)
+            ->where('id', '=', $status_id)
+            ->doesntExist();
+        if ($status) {
+            return response()->json([
+                'error' => 'status is not exist'
+            ], 404);
+        }
+
+        $task_id = $request->input('task_id');
+
+        $task = $request->isMethod('PUT') ? Task::findOrFail($task_id) : new Task();
+
+        $task->status_id = $status_id;
+        $task->name = $request->input('name');
+        $task->description = $request->input('description');
+        $task->deadline = $request->input('deadline');
+
+        if ($task->save()) {
+            //タスクを作成したら、ユーザーとの関係を作成
+            if ($request->isMethod('POST')) {
+                $task_user = new TasksUsers();
+                $task_user->user_id = Auth::id();
+                $task_user->task_id = $task->id;
+                if ($task_user->save()) {
+                    return new TaskResource($task);
+                }
+            } else {
+                return new TaskResource($task);
+            }
+        }
+        return response()->json([
+            'error' => 'Can not save your task'
+        ], 500);
+    }
+
     /**
      * Display the specified resource.
      */

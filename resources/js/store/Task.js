@@ -26,11 +26,11 @@ const actions = {
     await axios.post('/api/assign_task', data);
   },
   async changeTask(context, data) {
-    const response = await axios.put('/api/task', data);
+    const response = await axios.post('/api/change_task', data);
     context.commit('changeTask', response.data.data)
   },
   async deleteTask(context, data) {
-    await axios.delete('/api/task', data);
+    await axios.post('/api/delete_task', data);
   },
 };
 

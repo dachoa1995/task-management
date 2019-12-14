@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Auth;
 */
 
 // ログインユーザー
-Route::get('/user', function () {
+Route::middleware('auth:api')->get('/user', function () {
     return Auth::user();
 })->name('user');
 
@@ -29,10 +29,10 @@ Route::middleware('auth:api')->get('project', 'ProjectController@show');
 Route::middleware('auth:api')->post('project', 'ProjectController@store');
 
 // プロジェクトを更新
-Route::middleware('auth:api')->put('project', 'ProjectController@store');
+Route::middleware('auth:api')->post('change_project', 'ProjectController@update');
 
 // プロジェクトを削除
-Route::middleware('auth:api')->delete('project', 'ProjectController@destroy');
+Route::middleware('auth:api')->post('delete_project', 'ProjectController@destroy');
 
 // プロジェクトに担当者をアサインする
 Route::middleware('auth:api')->post('assign_project', 'ProjectController@assign');
@@ -45,10 +45,10 @@ Route::middleware('auth:api')->get('status_list', 'StatusController@index');
 Route::middleware('auth:api')->post('status', 'StatusController@store');
 
 // ワークフローを更新
-Route::middleware('auth:api')->put('status', 'StatusController@store');
+Route::middleware('auth:api')->post('change_status', 'StatusController@update');
 
 // ワークフローを削除
-Route::middleware('auth:api')->delete('status', 'StatusController@destroy');
+Route::middleware('auth:api')->post('delete_status', 'StatusController@destroy');
 
 
 // タスクー覧を取得
@@ -61,10 +61,10 @@ Route::middleware('auth:api')->get('task', 'TaskController@show');
 Route::middleware('auth:api')->post('task', 'TaskController@store');
 
 // タスクを更新
-Route::middleware('auth:api')->put('task', 'TaskController@store');
+Route::middleware('auth:api')->post('change_task', 'TaskController@update');
 
 // タスクを削除
-Route::middleware('auth:api')->delete('task', 'TaskController@destroy');
+Route::middleware('auth:api')->post('delete_task', 'TaskController@destroy');
 
 // タスクに担当者をアサインする
 Route::middleware('auth:api')->post('assign_task', 'TaskController@assign');

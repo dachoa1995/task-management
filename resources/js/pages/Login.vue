@@ -36,7 +36,7 @@
 
         // トップページに移動する
         setTimeout(() =>
-          this.$router.push('/'),
+          window.location.href = '/',
           500
         );
       }

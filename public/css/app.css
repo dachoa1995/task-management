@@ -241,6 +241,14 @@ ul {
   margin-top: 1em;
 }
 
+.logout-button {
+  cursor: pointer;
+}
+
+.md-datepicker-dialog {
+  top: 50px !important;
+}
+
 .comment {
   margin: 3em;
   display: flex;

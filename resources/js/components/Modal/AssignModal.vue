@@ -11,7 +11,7 @@
                         <div class="md-layout md-gutter">
                             <div class="md-layout-item md-medium-size-100">
                                 <md-field :class="getValidationClass('email')">
-                                    <label for="email">メールアドレス</label>
+                                    <label for="email">メールアドレス（必要）</label>
                                     <md-input name="email" id="email" v-model="form.email"/>
                                     <span class="md-error" v-if="!$v.form.email.required">メールアドレスが必要です。</span>
                                     <span class="md-error" v-if="!$v.form.email.email">メールアドレスを正しく入力してください。</span>

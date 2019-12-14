@@ -39,12 +39,13 @@
       Message,
       CommentModal
     },
-    mounted() {
+    async mounted() {
       this.form = {
         project_id: this.$route.params.id,
         task_id: this.$route.params.taskID,
         content: ''
       };
+      await this.$store.dispatch('auth/currentUser');
       this.$refs.CommentModal.setForm(this.form);
       this.$refs.CommentModal.setUser({
         avatarURL: this.$store.getters['auth/avatarURL'],

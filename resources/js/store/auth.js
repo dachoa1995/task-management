@@ -1,11 +1,11 @@
-import {setCookie} from '../util'
+import {getCookieValue, setCookie, deleteCookie} from '../util'
 
 const state = {
   user: null
 };
 
 const getters = {
-  check: state => !! state.user,
+  isLogin: state => getCookieValue('api_token') !== '',
   name: state => state.user ? state.user.name : '',
   avatarURL: state => state.user ? state.user.avatarURL : '',
   api_token: state => state.user ? state.user.api_token : '',
@@ -29,6 +29,7 @@ const actions = {
   },
   async logout (context) {
     await axios.get('/logout');
+    deleteCookie('api_token');
     context.commit('setUser', null)
   }
 };

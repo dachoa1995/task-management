@@ -11,17 +11,16 @@
                         <div class="md-layout md-gutter">
                             <div class="md-layout-item md-medium-size-100">
                                 <md-field :class="getValidationClass('name')">
-                                    <label for="name">名前</label>
+                                    <label for="name">名前（必要）</label>
                                     <md-input name="name" id="name" v-model="form.name"/>
                                     <span class="md-error" v-if="!$v.form.name.required">名前が必要です。</span>
                                 </md-field>
                             </div>
 
                             <div class="md-layout-item md-medium-size-100">
-                                <md-field :class="getValidationClass('description')">
+                                <md-field>
                                     <label for="description">説明文</label>
                                     <md-input name="description" id="description" v-model="form.description"/>
-                                    <span class="md-error" v-if="!$v.form.description.required">説明文が必要です。</span>
                                 </md-field>
                             </div>
                         </div>
@@ -69,10 +68,7 @@
       form: {
         name: {
           required,
-        },
-        description: {
-          required,
-        },
+        }
       },
     },
     methods: {

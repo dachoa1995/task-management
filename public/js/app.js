@@ -1999,19 +1999,44 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     Message: _components_Message_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
     CommentModal: _components_Modal_CommentModal_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
-  mounted: function mounted() {
-    this.form = {
-      project_id: this.$route.params.id,
-      task_id: this.$route.params.taskID,
-      content: ''
-    };
-    this.$refs.CommentModal.setForm(this.form);
-    this.$refs.CommentModal.setUser({
-      avatarURL: this.$store.getters['auth/avatarURL'],
-      name: this.$store.getters['auth/name']
-    });
-    this.getComments();
-  },
+  mounted: function () {
+    var _mounted = _asyncToGenerator(
+    /*#__PURE__*/
+    _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              this.form = {
+                project_id: this.$route.params.id,
+                task_id: this.$route.params.taskID,
+                content: ''
+              };
+              _context.next = 3;
+              return this.$store.dispatch('auth/currentUser');
+
+            case 3:
+              this.$refs.CommentModal.setForm(this.form);
+              this.$refs.CommentModal.setUser({
+                avatarURL: this.$store.getters['auth/avatarURL'],
+                name: this.$store.getters['auth/name']
+              });
+              this.getComments();
+
+            case 6:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee, this);
+    }));
+
+    function mounted() {
+      return _mounted.apply(this, arguments);
+    }
+
+    return mounted;
+  }(),
   data: function data() {
     return {
       form: {
@@ -2026,12 +2051,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     getComments: function () {
       var _getComments = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
-            switch (_context.prev = _context.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
-                _context.next = 2;
+                _context2.next = 2;
                 return this.$store.dispatch('comment/getComments', {
                   params: this.form
                 });
@@ -2041,10 +2066,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 3:
               case "end":
-                return _context.stop();
+                return _context2.stop();
             }
           }
-        }, _callee, this);
+        }, _callee2, this);
       }));
 
       function getComments() {
@@ -2108,9 +2133,7 @@ __webpack_require__.r(__webpack_exports__);
       switch (this.delete_modal.action) {
         case 'deleteProject':
           this.$store.dispatch('project/deleteProject', {
-            params: {
-              'project_id': this.delete_modal.project_id
-            }
+            'project_id': this.delete_modal.project_id
           }).then(function () {
             _this.$refs.Message.setValue({
               active: true,
@@ -2130,10 +2153,8 @@ __webpack_require__.r(__webpack_exports__);
 
         case 'deleteStatus':
           this.$store.dispatch('status/deleteStatus', {
-            params: {
-              'project_id': this.delete_modal.project_id,
-              'status_id': this.delete_modal.status_id
-            }
+            'project_id': this.delete_modal.project_id,
+            'status_id': this.delete_modal.status_id
           }).then(function () {
             _this.$refs.Message.setValue({
               active: true,
@@ -2151,10 +2172,8 @@ __webpack_require__.r(__webpack_exports__);
 
         case 'deleteTask':
           this.$store.dispatch('task/deleteTask', {
-            params: {
-              'project_id': this.delete_modal.project_id,
-              'task_id': this.delete_modal.task_id
-            }
+            'project_id': this.delete_modal.project_id,
+            'task_id': this.delete_modal.task_id
           }).then(function () {
             _this.$refs.Message.setValue({
               active: true,
@@ -2434,7 +2453,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     processAfterSave: function processAfterSave() {
       this.config.sending = false;
-      this.form.content = '';
+      this.form.content = ' ';
     },
     saveComment: function saveComment() {
       var _this = this;
@@ -2526,7 +2545,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2550,9 +2568,6 @@ __webpack_require__.r(__webpack_exports__);
   validations: {
     form: {
       name: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_0__["required"]
-      },
-      description: {
         required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_0__["required"]
       }
     }
@@ -2818,7 +2833,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 
 
@@ -2846,9 +2860,6 @@ __webpack_require__.r(__webpack_exports__);
   validations: {
     form: {
       name: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_0__["required"]
-      },
-      description: {
         required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_0__["required"]
       }
     }
@@ -2942,13 +2953,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   computed: {
     isLogin: function isLogin() {
-      return this.$store.getters['auth/check'];
+      return this.$store.getters['auth/isLogin'];
     },
     username: function username() {
       return this.$store.getters['auth/name'];
@@ -2967,7 +2975,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return this.$store.dispatch('auth/logout');
 
               case 2:
-                this.$router.push('/login');
+                window.location.href = '/login'; //this.$router.push('/login');
 
               case 3:
               case "end":
@@ -3252,7 +3260,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 4:
                 // トップページに移動する
-                this.$router.push('/');
+                setTimeout(function () {
+                  return window.location.href = '/';
+                }, 500);
 
               case 5:
               case "end":
@@ -3419,6 +3429,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+//
 //
 //
 //
@@ -43318,7 +43329,7 @@ var render = function() {
               _c(
                 "md-avatar",
                 { staticClass: "md-avatar-icon md-primary" },
-                [_c("md-icon", [_vm._v("add")])],
+                [_c("md-icon", [_vm._v("person_add")])],
                 1
               )
             ],
@@ -43618,7 +43629,7 @@ var render = function() {
                           { class: _vm.getValidationClass("email") },
                           [
                             _c("label", { attrs: { for: "email" } }, [
-                              _vm._v("メールアドレス")
+                              _vm._v("メールアドレス（必要）")
                             ]),
                             _vm._v(" "),
                             _c("md-input", {
@@ -43759,7 +43770,7 @@ var render = function() {
                   "md-field",
                   { class: _vm.getValidationClass("content") },
                   [
-                    _c("label", [_vm._v("コメント")]),
+                    _c("label", [_vm._v("コメント（必要）")]),
                     _vm._v(" "),
                     _c("md-textarea", {
                       model: {
@@ -43859,7 +43870,7 @@ var render = function() {
                           { class: _vm.getValidationClass("name") },
                           [
                             _c("label", { attrs: { for: "name" } }, [
-                              _vm._v("名前")
+                              _vm._v("名前（必要）")
                             ]),
                             _vm._v(" "),
                             _c("md-input", {
@@ -43891,7 +43902,6 @@ var render = function() {
                       [
                         _c(
                           "md-field",
-                          { class: _vm.getValidationClass("description") },
                           [
                             _c("label", { attrs: { for: "description" } }, [
                               _vm._v("説明文")
@@ -43906,13 +43916,7 @@ var render = function() {
                                 },
                                 expression: "form.description"
                               }
-                            }),
-                            _vm._v(" "),
-                            !_vm.$v.form.description.required
-                              ? _c("span", { staticClass: "md-error" }, [
-                                  _vm._v("説明文が必要です。")
-                                ])
-                              : _vm._e()
+                            })
                           ],
                           1
                         )
@@ -44042,7 +44046,7 @@ var render = function() {
                           { class: _vm.getValidationClass("name") },
                           [
                             _c("label", { attrs: { for: "name" } }, [
-                              _vm._v("名前")
+                              _vm._v("名前（必要）")
                             ]),
                             _vm._v(" "),
                             _c("md-input", {
@@ -44188,7 +44192,7 @@ var render = function() {
                           { class: _vm.getValidationClass("name") },
                           [
                             _c("label", { attrs: { for: "name" } }, [
-                              _vm._v("名前")
+                              _vm._v("名前（必要）")
                             ]),
                             _vm._v(" "),
                             _c("md-input", {
@@ -44220,7 +44224,6 @@ var render = function() {
                       [
                         _c(
                           "md-field",
-                          { class: _vm.getValidationClass("description") },
                           [
                             _c("label", [_vm._v("説明文")]),
                             _vm._v(" "),
@@ -44232,13 +44235,7 @@ var render = function() {
                                 },
                                 expression: "form.description"
                               }
-                            }),
-                            _vm._v(" "),
-                            !_vm.$v.form.description.required
-                              ? _c("span", { staticClass: "md-error" }, [
-                                  _vm._v("説明文が必要です。")
-                                ])
-                              : _vm._e()
+                            })
                           ],
                           1
                         )
@@ -44352,52 +44349,23 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "nav",
-    { staticClass: "navbar" },
-    [
-      _c("RouterLink", { staticClass: "navbar__brand", attrs: { to: "/" } }, [
-        _vm._v("\n        Task Management\n    ")
-      ]),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "navbar__menu" },
-        [
-          _vm.isLogin
-            ? _c(
-                "md-menu",
-                {
-                  attrs: {
-                    "md-size": "medium",
-                    "md-align-trigger": "",
-                    "md-direction": "top-end"
-                  }
-                },
-                [
-                  _c("md-button", { attrs: { "md-menu-trigger": "" } }, [
-                    _vm._v(_vm._s(_vm.username))
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "md-menu-content",
-                    [
-                      _c("md-menu-item", { on: { click: _vm.logout } }, [
-                        _vm._v("ログアウト")
-                      ])
-                    ],
-                    1
-                  )
-                ],
-                1
-              )
-            : _vm._e()
-        ],
-        1
-      )
-    ],
-    1
-  )
+  return _c("nav", { staticClass: "navbar" }, [
+    _c("a", { staticClass: "navbar__brand", attrs: { href: "/" } }, [
+      _vm._v("\n        Task Management\n    ")
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "navbar__menu" }, [
+      _vm.isLogin
+        ? _c("div", [
+            _c(
+              "a",
+              { staticClass: "logout-button", on: { click: _vm.logout } },
+              [_vm._v("ログアウト")]
+            )
+          ])
+        : _vm._e()
+    ])
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -44730,6 +44698,8 @@ var render = function() {
       _c(
         "div",
         [
+          _c("h1", [_vm._v("プロジェクト一覧")]),
+          _vm._v(" "),
           _c("ProjectModal", {
             ref: "ProjectModal",
             on: { updateProject: _vm.updateProject }
@@ -99303,11 +99273,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 vue__WEBPACK_IMPORTED_MODULE_1___default.a.use(vue_axios__WEBPACK_IMPORTED_MODULE_6___default.a, axios__WEBPACK_IMPORTED_MODULE_8___default.a);
 vue__WEBPACK_IMPORTED_MODULE_1___default.a.use(vue_authenticate__WEBPACK_IMPORTED_MODULE_7__["default"], {
-  baseUrl: 'http://local.task.com/',
+  baseUrl: 'https://task-management-oss.000webhostapp.com/',
   providers: {
     google: {
       clientId: '723569059770-uluu31hlfll07sil7meqa75up3ip0upr.apps.googleusercontent.com',
-      redirectUri: 'http://local.task.com/auth/google/callback'
+      redirectUri: 'https://task-management-oss.000webhostapp.com/auth/google/callback'
     }
   }
 });
@@ -99325,10 +99295,7 @@ function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.next = 2;
-            return _store__WEBPACK_IMPORTED_MODULE_3__["default"].dispatch('auth/currentUser');
-
-          case 2:
+            // ログインチェックしてからアプリを生成する
             new vue__WEBPACK_IMPORTED_MODULE_1___default.a({
               el: '#app',
               router: _router__WEBPACK_IMPORTED_MODULE_2__["default"],
@@ -99339,7 +99306,7 @@ function () {
               template: '<App />'
             });
 
-          case 3:
+          case 1:
           case "end":
             return _context.stop();
         }
@@ -99365,7 +99332,7 @@ createApp();
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./store */ "./resources/js/store/index.js");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./util */ "./resources/js/util.js");
 
 window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 /**
@@ -99415,7 +99382,7 @@ if (token) {
 
 
 window.axios.interceptors.request.use(function (config) {
-  var token = _store__WEBPACK_IMPORTED_MODULE_0__["default"].getters['auth/api_token'];
+  var token = Object(_util__WEBPACK_IMPORTED_MODULE_0__["getCookieValue"])('api_token');
   config.headers['Authorization'] = 'Bearer ' + token;
   return config;
 });
@@ -100526,7 +100493,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _pages_Login_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./pages/Login.vue */ "./resources/js/pages/Login.vue");
 /* harmony import */ var _pages_ProjectDetail_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./pages/ProjectDetail.vue */ "./resources/js/pages/ProjectDetail.vue");
 /* harmony import */ var _pages_TaskDetail_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./pages/TaskDetail.vue */ "./resources/js/pages/TaskDetail.vue");
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./store */ "./resources/js/store/index.js");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./util */ "./resources/js/util.js");
 
  // ページコンポーネントをインポートする
 
@@ -100537,13 +100504,14 @@ __webpack_require__.r(__webpack_exports__);
  // VueRouterプラグインを使用する
 // これによって<RouterView />コンポーネントなどを使うことができる
 
-vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]); // パスとコンポーネントのマッピング
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]);
+var hasToken = Object(_util__WEBPACK_IMPORTED_MODULE_6__["getCookieValue"])('api_token') !== ''; // パスとコンポーネントのマッピング
 
 var routes = [{
   path: '/',
   component: _pages_Projects_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
   beforeEnter: function beforeEnter(to, from, next) {
-    if (!_store__WEBPACK_IMPORTED_MODULE_6__["default"].getters['auth/check']) {
+    if (!hasToken) {
       next('/login');
     }
 
@@ -100553,7 +100521,7 @@ var routes = [{
   path: '/login',
   component: _pages_Login_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
   beforeEnter: function beforeEnter(to, from, next) {
-    if (_store__WEBPACK_IMPORTED_MODULE_6__["default"].getters['auth/check']) {
+    if (hasToken) {
       next('/');
     }
 
@@ -100563,7 +100531,7 @@ var routes = [{
   path: '/project/:id',
   component: _pages_ProjectDetail_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
   beforeEnter: function beforeEnter(to, from, next) {
-    if (!_store__WEBPACK_IMPORTED_MODULE_6__["default"].getters['auth/check']) {
+    if (!hasToken) {
       next('/login');
     }
 
@@ -100573,7 +100541,7 @@ var routes = [{
   path: '/project/:id/:taskID',
   component: _pages_TaskDetail_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
   beforeEnter: function beforeEnter(to, from, next) {
-    if (!_store__WEBPACK_IMPORTED_MODULE_6__["default"].getters['auth/check']) {
+    if (!hasToken) {
       next('/login');
     }
 
@@ -100602,18 +100570,20 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util */ "./resources/js/util.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+
 var state = {
   user: null
 };
 var getters = {
-  check: function check(state) {
-    return !!state.user;
+  isLogin: function isLogin(state) {
+    return Object(_util__WEBPACK_IMPORTED_MODULE_1__["getCookieValue"])('api_token') !== '';
   },
   name: function name(state) {
     return state.user ? state.user.name : '';
@@ -100640,8 +100610,9 @@ var actions = {
           switch (_context.prev = _context.next) {
             case 0:
               context.commit('setUser', data);
+              Object(_util__WEBPACK_IMPORTED_MODULE_1__["setCookie"])('api_token', data.api_token, 1);
 
-            case 1:
+            case 2:
             case "end":
               return _context.stop();
           }
@@ -100698,9 +100669,10 @@ var actions = {
               return axios.get('/logout');
 
             case 2:
+              Object(_util__WEBPACK_IMPORTED_MODULE_1__["deleteCookie"])('api_token');
               context.commit('setUser', null);
 
-            case 3:
+            case 4:
             case "end":
               return _context3.stop();
           }
@@ -100989,10 +100961,10 @@ var actions = {
           switch (_context3.prev = _context3.next) {
             case 0:
               _context3.next = 2;
-              return axios["delete"]('/api/project', data);
+              return axios.post('/api/delete_project', data);
 
             case 2:
-              context.commit('deleteProject', data.params.project_id);
+              context.commit('deleteProject', data.project_id);
 
             case 3:
             case "end":
@@ -101017,7 +100989,7 @@ var actions = {
           switch (_context4.prev = _context4.next) {
             case 0:
               _context4.next = 2;
-              return axios.put('/api/project', data);
+              return axios.post('/api/change_project', data);
 
             case 2:
               context.commit('changeProject', data);
@@ -101231,7 +101203,7 @@ var actions = {
           switch (_context3.prev = _context3.next) {
             case 0:
               _context3.next = 2;
-              return axios.put('/api/status', data);
+              return axios.post('/api/change_status', data);
 
             case 2:
               response = _context3.sent;
@@ -101260,10 +101232,10 @@ var actions = {
           switch (_context4.prev = _context4.next) {
             case 0:
               _context4.next = 2;
-              return axios["delete"]('/api/status', data);
+              return axios.post('/api/delete_status', data);
 
             case 2:
-              context.commit('deleteStatus', data.params.status_id);
+              context.commit('deleteStatus', data.status_id);
 
             case 3:
             case "end":
@@ -101446,7 +101418,7 @@ var actions = {
           switch (_context3.prev = _context3.next) {
             case 0:
               _context3.next = 2;
-              return axios.put('/api/task', data);
+              return axios.post('/api/change_task', data);
 
             case 2:
               response = _context3.sent;
@@ -101475,7 +101447,7 @@ var actions = {
           switch (_context4.prev = _context4.next) {
             case 0:
               _context4.next = 2;
-              return axios["delete"]('/api/task', data);
+              return axios.post('/api/delete_task', data);
 
             case 2:
             case "end":
@@ -101506,14 +101478,57 @@ var actions = {
 /*!******************************!*\
   !*** ./resources/js/util.js ***!
   \******************************/
-/*! exports provided: formatDate */
+/*! exports provided: formatDate, getCookieValue, setCookie, deleteCookie */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "formatDate", function() { return formatDate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookieValue", function() { return getCookieValue; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setCookie", function() { return setCookie; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteCookie", function() { return deleteCookie; });
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function formatDate(date) {
   return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+}
+function getCookieValue(searchKey) {
+  if (typeof searchKey === 'undefined') {
+    return '';
+  }
+
+  var val = '';
+  document.cookie.split(';').forEach(function (cookie) {
+    var _cookie$split = cookie.split('='),
+        _cookie$split2 = _slicedToArray(_cookie$split, 2),
+        key = _cookie$split2[0],
+        value = _cookie$split2[1];
+
+    if (key === searchKey) {
+      return val = value;
+    }
+  });
+  return val;
+}
+function setCookie(name, value, days) {
+  var expires = "";
+
+  if (days) {
+    var date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    expires = "; expires=" + date.toUTCString();
+  }
+
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+function deleteCookie(name) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
 /***/ }),

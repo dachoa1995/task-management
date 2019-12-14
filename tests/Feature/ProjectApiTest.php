@@ -187,7 +187,7 @@ class ProjectApiTest extends TestCase
 
         //api_tokenがHeaderに含まらないとエラー出るか
         $query = [
-            'user_id' => $another_user->id,
+            'email' => $another_user->email,
             'project_id' => $this->project->id
         ];
         $response = $this->json('POST', $this->assignProjectAPI, $query, []);

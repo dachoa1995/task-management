@@ -99,51 +99,6 @@ class StatusAPITest extends TestCase
     }
 
     /*
-     * プロジェクトのワークフローを取得の周りのテストです。
-     * api_tokenがHeaderに含まらないとエラー
-     * 自分のプロジェクトのワークフローを取得できるか
-     * サーパーから返したレスポンスの形式があっているか
-     * 存在していないプロジェクトでワークフローを取得すれば、エラー出るか
-     * 存在していないワークフローを取得すれば、エラー出るか
-    */
-    public function testIfAccessStatus() {
-        $query = [
-            'project_id' => $this->project->id,
-            'status_id' => $this->status->id,
-        ];
-        //api_tokenがHeaderに含まらないとエラー
-        $response = $this->json('GET', $this->statusAPI, $query, []);
-        $response->assertStatus(401);
-
-        //自分のプロジェクトのワークフローを取得できるか
-        $response = $this->json('GET', $this->statusAPI, $query, $this->header);
-
-        //サーパーから返したレスポンスの形式があっているか
-        $response
-            ->assertStatus(200)
-            ->assertJson([
-                'data' => [
-                    'project_id' => $this->project->id,
-                    'name' => $this->status->name,
-                    'order' => $this->status->order
-                ],
-                'version' => '1.0.0',
-                'author_url' => 'https://github.com/dachoa1995'
-            ]);
-
-        //存在していないプロジェクトでワークフローを取得すれば、エラー出るか
-        $query['project_id'] = 300;
-        $response = $this->json('GET', $this->statusAPI, $query, $this->header);
-        $response->assertStatus(403);
-
-        //存在していないワークフローを取得すれば、エラー出るか
-        $query['project_id'] = $this->project->id;
-        $query['status_id'] = 300;
-        $response = $this->json('GET', $this->statusAPI, $query, $this->header);
-        $response->assertStatus(404);
-    }
-
-    /*
      * プロジェクトでのワークフローを修正の周りのテストです。
      * api_tokenがHeaderに含まらないとエラー
      * 自分のプロジェクトでのワークフローを編集できるか
@@ -324,14 +279,6 @@ class StatusAPITest extends TestCase
             'order' => 2,
         ];
         $response = $this->json('POST', $this->statusAPI, $status_data, $header);
-        $response->assertStatus(403);
-
-        //他の人のプロジェクトのワークフローを取得できるか
-        $query = [
-            'project_id' => $this->project->id,
-            'status_id' => $this->status->id,
-        ];
-        $response = $this->json('GET', $this->statusAPI, $query, $header);
         $response->assertStatus(403);
 
         //他の人のプロジェクトのワークフローを編集できるか

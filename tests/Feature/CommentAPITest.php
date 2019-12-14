@@ -162,7 +162,7 @@ class CommentAPITest extends TestCase
         //存在していないコメントを編集すれば、エラー出るか
         $comment_content['comment_id'] = 300;
         $response = $this->json('PUT', $this->commentAPI, $comment_content, []);
-        $response->assertStatus(403);
+        $response->assertStatus(404);
     }
 
     /*

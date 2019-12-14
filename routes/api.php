@@ -20,67 +20,67 @@ Route::get('/user', function () {
 })->name('user');
 
 // プロジェクト一覧を取得
-Route::middleware('auth:api')->get('projects', 'ProjectController@index');
+Route::get('projects', 'ProjectController@index');
 
 // プロジェクト詳細を取得
-Route::middleware('auth:api')->get('project', 'ProjectController@show');
+Route::get('project', 'ProjectController@show');
 
 // プロジェクトを投稿
-Route::middleware('auth:api')->post('project', 'ProjectController@store');
+Route::post('project', 'ProjectController@store');
 
 // プロジェクトを更新
-Route::middleware('auth:api')->put('project', 'ProjectController@store');
+Route::put('project', 'ProjectController@store');
 
 // プロジェクトを削除
-Route::middleware('auth:api')->delete('project', 'ProjectController@destroy');
+Route::delete('project', 'ProjectController@destroy');
 
 // プロジェクトに担当者をアサインする
-Route::middleware('auth:api')->post('assign_project', 'ProjectController@assign');
+Route::post('assign_project', 'ProjectController@assign');
 
 
 // ワークフロー覧を取得
-Route::middleware('auth:api')->get('status_list', 'StatusController@index');
+Route::get('status_list', 'StatusController@index');
 
 // ワークフローを投稿
-Route::middleware('auth:api')->post('status', 'StatusController@store');
+Route::post('status', 'StatusController@store');
 
 // ワークフローを更新
-Route::middleware('auth:api')->put('status', 'StatusController@store');
+Route::put('status', 'StatusController@store');
 
 // ワークフローを削除
-Route::middleware('auth:api')->delete('status', 'StatusController@destroy');
+Route::delete('status', 'StatusController@destroy');
 
 
 // タスクー覧を取得
-Route::middleware('auth:api')->get('tasks', 'TaskController@index');
+Route::get('tasks', 'TaskController@index');
 
 // タスク詳細を取得
-Route::middleware('auth:api')->get('task', 'TaskController@show');
+Route::get('task', 'TaskController@show');
 
 // タスクを投稿
-Route::middleware('auth:api')->post('task', 'TaskController@store');
+Route::post('task', 'TaskController@store');
 
 // タスクを更新
-Route::middleware('auth:api')->put('task', 'TaskController@store');
+Route::put('task', 'TaskController@store');
 
 // タスクを削除
-Route::middleware('auth:api')->delete('task', 'TaskController@destroy');
+Route::delete('task', 'TaskController@destroy');
 
 // タスクに担当者をアサインする
-Route::middleware('auth:api')->post('assign_task', 'TaskController@assign');
+Route::post('assign_task', 'TaskController@assign');
 
 // タスクに担当者をアサインする
-Route::middleware('auth:api')->post('moveTask', 'TaskController@moveTask');
+Route::post('moveTask', 'TaskController@moveTask');
 
 
 // タスクでコメントー覧を取得
-Route::middleware('auth:api')->get('comments', 'CommentController@index');
+Route::get('comments', 'CommentController@index');
 
 // タスクでコメントを投稿
-Route::middleware('auth:api')->post('comment', 'CommentController@store');
+Route::post('comment', 'CommentController@store');
 
 // タスクでコメントを更新
-Route::middleware('auth:api')->put('comment', 'CommentController@update');
+Route::put('comment', 'CommentController@update');
 
 // タスクでコメントを削除
-Route::middleware('auth:api')->delete('comment', 'CommentController@destroy');
+Route::delete('comment', 'CommentController@destroy');

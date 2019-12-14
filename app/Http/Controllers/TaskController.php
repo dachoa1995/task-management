@@ -88,6 +88,12 @@ class TaskController extends Controller
             ->where('id', '=', $task_id)
             ->first();
 
+        if (is_null($task)) {
+            return response()->json([
+                'error' => 'Task does not exists'
+            ], 404);
+        }
+
         // return single article as a resource
         return new TaskResource($task);
     }

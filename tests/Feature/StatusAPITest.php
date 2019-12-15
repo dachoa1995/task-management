@@ -18,8 +18,7 @@ class StatusAPITest extends TestCase
     private $status;
     private $header;
     private $statusAPI = '/api/status';
-    private $statusListAPI = '/api/status_list';
-
+    private $accessStatusAPI = '';
 
     protected function setUp(): void
     {
@@ -43,6 +42,8 @@ class StatusAPITest extends TestCase
         $this->status->name = 'TODO';
         $this->status->order = 1;
         $this->status->save();
+
+        $this->accessStatusAPI = $this->statusAPI . '/' . $this->status->id;
 
         $this->header = [
             'Authorization' => 'Bearer ' . $this->user->api_token,
@@ -110,16 +111,15 @@ class StatusAPITest extends TestCase
     public function testIfChangeStatus() {
         $query = [
             'project_id' => $this->project->id,
-            'status_id' => $this->status->id,
             'name' => 'new name',
             'order' => 'new order'
         ];
         //api_tokenがHeaderに含まらないとエラー
-        $response = $this->json('PUT', $this->statusAPI, $query, []);
+        $response = $this->json('PUT', $this->accessStatusAPI, $query, []);
         $response->assertStatus(401);
 
         //自分のプロジェクトでのワークフローを編集できるか
-        $response = $this->json('PUT', $this->statusAPI, $query, $this->header);
+        $response = $this->json('PUT', $this->accessStatusAPI, $query, $this->header);
 
         //サーパーから返したレスポンスの形式があっているか
         $response
@@ -142,13 +142,12 @@ class StatusAPITest extends TestCase
 
         //存在していないプロジェクトでのワークフローを編集すれば、エラー出るか
         $query['project_id'] = 300;
-        $response = $this->json('PUT', $this->statusAPI, $query, $this->header);
+        $response = $this->json('PUT', $this->accessStatusAPI, $query, $this->header);
         $response->assertStatus(403);
 
         //プロジェクトで存在していないワークフローを編集すれば、エラー出るか
         $query['project_id'] = $this->project->id;
-        $query['status_id'] = 300;
-        $response = $this->json('PUT', $this->statusAPI, $query, $this->header);
+        $response = $this->json('PUT', $this->statusAPI . '/300', $query, $this->header);
         $response->assertStatus(404);
     }
 
@@ -164,27 +163,23 @@ class StatusAPITest extends TestCase
     public function testIfDeleteStatus() {
 
         //api_tokenがHeaderに含まらないとエラー出るか
-        $response = $this->json('DELETE', $this->statusAPI, [], []);
+        $response = $this->json('DELETE', $this->accessStatusAPI, [], []);
         $response->assertStatus(401);
 
         //存在していないプロジェクトでのワークフローを削除すれば、エラー出るか
         $query = [
             'project_id' => 300,
-            'status_id' => $this->status->id,
         ];
-        $response = $this->json('DELETE', $this->statusAPI, $query, $this->header);
+        $response = $this->json('DELETE', $this->accessStatusAPI, $query, $this->header);
         $response->assertStatus(403);
 
         //プロジェクトで存在していないワークフローを削除すれば、エラー出るか
         $query['project_id'] = $this->project->id;
-        $query['status_id'] = 300;
-        $response = $this->json('DELETE', $this->statusAPI, $query, $this->header);
+        $response = $this->json('DELETE', $this->statusAPI . '/300', $query, $this->header);
         $response->assertStatus(404);
 
         //自分のプロジェクトを削除できるか
-        $query['status_id'] = $this->status->id;
-
-        $response = $this->json('DELETE', $this->statusAPI, $query, $this->header);
+        $response = $this->json('DELETE', $this->accessStatusAPI, $query, $this->header);
 
         //サーパーから返したレスポンスの形式があっているか
         $response->assertStatus(204);
@@ -202,14 +197,14 @@ class StatusAPITest extends TestCase
      */
     public function testIfGetListStatus() {
         //api_tokenがHeaderに含まらないとエラー出るか
-        $response = $this->json('GET', $this->statusListAPI, [], []);
+        $response = $this->json('GET', $this->statusAPI, [], []);
         $response->assertStatus(401);
 
         //存在していないプロジェクトでのワークフロー一覧を取得すれば、エラー出るか
         $query = [
             'project_id' => 300,
         ];
-        $response = $this->json('GET', $this->statusListAPI, $query, $this->header);
+        $response = $this->json('GET', $this->statusAPI, $query, $this->header);
         $response->assertStatus(403);
 
         //もう一つのワークフローを作成
@@ -222,7 +217,7 @@ class StatusAPITest extends TestCase
         //自分のプロジェクトでのワークフロー一覧を取得できるか
         $query['project_id'] = $this->project->id;
 
-        $response = $this->json('GET', $this->statusListAPI, $query, $this->header);
+        $response = $this->json('GET', $this->statusAPI, $query, $this->header);
 
         $response
             ->assertStatus(200)
@@ -242,8 +237,8 @@ class StatusAPITest extends TestCase
                     ]
                 ],
                 'links' => [
-                    'first' => 'http://localhost/api/status_list?page=1',
-                    'last' => 'http://localhost/api/status_list?page=1',
+                    'first' => 'http://localhost/api/status?page=1',
+                    'last' => 'http://localhost/api/status?page=1',
                     'prev' => null,
                     'next' => null
                 ],
@@ -251,7 +246,7 @@ class StatusAPITest extends TestCase
                     'current_page' => 1,
                     'from' => 1,
                     'last_page' => 1,
-                    'path' => 'http://localhost/api/status_list',
+                    'path' => 'http://localhost/api/status',
                     'per_page' => 10
                 ]
             ]);
@@ -274,7 +269,6 @@ class StatusAPITest extends TestCase
             'Accept' => 'application/json',
         ];
         $status_data = [
-            'project_id' => $this->project->id,
             'name' => '開発中',
             'order' => 2,
         ];
@@ -284,15 +278,15 @@ class StatusAPITest extends TestCase
         //他の人のプロジェクトのワークフローを編集できるか
         $query['name'] = 'new name';
         $query['order'] = 'new order';
-        $response = $this->json('PUT', $this->statusAPI, $query, $header);
+        $response = $this->json('PUT', $this->accessStatusAPI, $query, $header);
         $response->assertStatus(403);
 
         //他の人のプロジェクトのワークフローを削除できるか
-        $response = $this->json('DELETE', $this->statusAPI, $query, $header);
+        $response = $this->json('DELETE', $this->accessStatusAPI, $query, $header);
         $response->assertStatus(403);
 
         //他の人のプロジェクトのワークフロー一覧を取得できるか
-        $response = $this->json('GET', $this->statusListAPI, $query, $header);
+        $response = $this->json('GET', $this->statusAPI, $query, $header);
         $response->assertStatus(403);
     }
 }

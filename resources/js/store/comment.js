@@ -22,7 +22,7 @@ const actions = {
     context.commit('initComments', response.data.data)
   },
   async createComment(context, data) {
-    const response = await axios.post('/api/comment', data.form);
+    const response = await axios.post('/api/comments', data.form);
     const comment = response.data.data;
     comment.user = data.user;
     context.commit('createComments', comment)

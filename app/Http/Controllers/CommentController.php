@@ -63,11 +63,9 @@ class CommentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request)
+    public function update($comment_id, Request $request)
     {
         Gate::authorize('access-project', [$request->input('project_id')]);
-
-        $comment_id = $request->input('comment_id');
 
         $update_comment = Comment::findOrFail($comment_id);
 
@@ -87,11 +85,9 @@ class CommentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request)
+    public function destroy($comment_id, Request $request)
     {
         Gate::authorize('access-project', [$request->input('project_id')]);
-
-        $comment_id = $request->input('comment_id');
 
         $comment = Comment::findOrFail($comment_id);
 

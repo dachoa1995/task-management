@@ -35,30 +35,17 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        if ($request->isMethod('PUT')) {
-            $project_id = $request->input('project_id');
-
-            Gate::authorize('access-project', [$project_id]);
-
-            $project = Project::findOrFail($project_id);
-        } else {
-            $project = new Project();
-        }
-
+        $project = new Project();
 
         $project->name = $request->input('name');
         $project->description = $request->input('description');
 
         if ($project->save()) {
             //プロジェクトを作成したら、ユーザーとの関係を作成
-            if ($request->isMethod('POST')) {
-                $project_user = new ProjectsUsers();
-                $project_user->user_id = Auth::id();
-                $project_user->project_id = $project->id;
-                if ($project_user->save()) {
-                    return new ProjectResource($project);
-                }
-            } else {
+            $project_user = new ProjectsUsers();
+            $project_user->user_id = Auth::id();
+            $project_user->project_id = $project->id;
+            if ($project_user->save()) {
                 return new ProjectResource($project);
             }
         }
@@ -67,12 +54,30 @@ class ProjectController extends Controller
         ], 500);
     }
 
+    public function update($project_id, Request $request)
+    {
+        Gate::authorize('access-project', [$project_id]);
+
+        $project = Project::findOrFail($project_id);
+
+        $project->name = $request->input('name');
+        $project->description = $request->input('description');
+
+        if ($project->save()) {
+            return new ProjectResource($project);
+        }
+
+        return response()->json([
+            'error' => 'Can not save your project'
+        ], 500);
+    }
+
     /**
      * @param $id
      */
-    public function show(Request $request)
+    public function show($project_id)
     {
-        $project_id = $request->input('project_id');
+        //$project_id = $request->input('project_id');
 
         Gate::authorize('access-project', [$project_id]);
 
@@ -87,10 +92,8 @@ class ProjectController extends Controller
      * @param $id
      * @return ProjectResource|\Illuminate\Http\JsonResponse
      */
-    public function destroy(Request $request)
+    public function destroy($project_id)
     {
-        $project_id = $request->input('project_id');
-
         Gate::authorize('access-project', [$project_id]);
 
         $project = Project::findOrFail($project_id);

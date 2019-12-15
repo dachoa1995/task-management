@@ -34,9 +34,27 @@ class StatusController extends Controller
 
         Gate::authorize('access-project', [$project_id]);
 
-        $status_id = $request->input('status_id');
+        $status = new Status();
 
-        $status = $request->isMethod('PUT') ? Status::findOrFail($status_id) : new Status();
+        $status->project_id = $project_id;
+        $status->name = $request->input('name');
+        $status->order = $request->input('order');
+
+        if ($status->save()) {
+            return new StatusResource($status);
+        }
+        return response()->json([
+            'error' => 'Can not save your status'
+        ], 500);
+    }
+
+    public function update($status_id, Request $request)
+    {
+        $project_id = $request->input('project_id');
+
+        Gate::authorize('access-project', [$project_id]);
+
+        $status = Status::findOrFail($status_id);
 
         $status->project_id = $project_id;
         $status->name = $request->input('name');
@@ -56,11 +74,9 @@ class StatusController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy($status_id, Request $request)
     {
         Gate::authorize('access-project', [$request->input('project_id')]);
-
-        $status_id = $request->input('status_id');
 
         $status = Status::findOrFail($status_id);
 

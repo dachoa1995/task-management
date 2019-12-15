@@ -22,8 +22,8 @@ class CommentAPITest extends TestCase
     private $task;
     private $comment;
     private $header;
-    private $commentAPI = '/api/comment';
-    private $commentListAPI = '/api/comments';
+    private $commentAPI = '/api/comments';
+    private $accessCommentAPI = '';
 
 
     protected function setUp(): void
@@ -69,6 +69,8 @@ class CommentAPITest extends TestCase
         $this->comment->task_id = $this->task->id;
         $this->comment->content = 'コメントの内容';
         $this->comment->save();
+
+        $this->accessCommentAPI = $this->commentAPI . '/' . $this->comment->id;
 
         $this->header = [
             'Authorization' => 'Bearer ' . $this->user->api_token,
@@ -132,17 +134,16 @@ class CommentAPITest extends TestCase
     public function testIfChangeComment()
     {
         $comment_content = [
-            'comment_id' => $this->comment->id,
             'project_id' => $this->project->id,
             'content' => 'change comment content'
         ];
 
         //api_tokenがHeaderに含まらないとエラー
-        $response = $this->json('PUT', $this->commentAPI, $comment_content, []);
+        $response = $this->json('PUT', $this->accessCommentAPI, $comment_content, []);
         $response->assertStatus(401);
 
         //自分のコメントを編集できるか
-        $response = $this->json('PUT', $this->commentAPI, $comment_content, $this->header);
+        $response = $this->json('PUT', $this->accessCommentAPI, $comment_content, $this->header);
 
         //サーパーから返したレスポンスの形式があっているか
         $response
@@ -160,8 +161,7 @@ class CommentAPITest extends TestCase
         $this->assertEquals($comment_content['content'], $comment->content);
 
         //存在していないコメントを編集すれば、エラー出るか
-        $comment_content['comment_id'] = 300;
-        $response = $this->json('PUT', $this->commentAPI, $comment_content, []);
+        $response = $this->json('PUT', $this->commentAPI . '/300', $comment_content, []);
         $response->assertStatus(404);
     }
 
@@ -176,16 +176,15 @@ class CommentAPITest extends TestCase
     public function testIfDeleteComment()
     {
         $query = [
-            'comment_id' => $this->comment->id,
             'project_id' => $this->project->id,
         ];
 
         //api_tokenがHeaderに含まらないとエラー
-        $response = $this->json('DELETE', $this->commentAPI, $query, []);
+        $response = $this->json('DELETE', $this->accessCommentAPI, $query, []);
         $response->assertStatus(401);
 
         //自分のコメントを削除できるか
-        $response = $this->json('DELETE', $this->commentAPI, $query, $this->header);
+        $response = $this->json('DELETE', $this->accessCommentAPI, $query, $this->header);
 
         //サーパーから返したレスポンスの形式があっているか
         $response->assertStatus(204);
@@ -195,9 +194,8 @@ class CommentAPITest extends TestCase
         $this->assertEquals(is_null($comment), true);
 
         //存在していないコメントを削除できるか
-        $comment_content['comment_id'] = 300;
-        $response = $this->json('DELETE', $this->commentAPI, $comment_content, []);
-        $response->assertStatus(403);
+        $response = $this->json('DELETE', $this->commentAPI . '/300', $query, []);
+        $response->assertStatus(404);
     }
 
     /*
@@ -213,7 +211,7 @@ class CommentAPITest extends TestCase
             'task_id' => $this->task->id,
         ];
         //api_tokenがHeaderに含まらないとエラー
-        $response = $this->json('GET', $this->commentListAPI, $query, []);
+        $response = $this->json('GET', $this->commentAPI, $query, []);
         $response->assertStatus(401);
 
         //もう一つコメントする
@@ -225,7 +223,7 @@ class CommentAPITest extends TestCase
         $comment2->save();
 
         //コメント一覧を取得できるか
-        $response = $this->json('GET', $this->commentListAPI, $query, $this->header);
+        $response = $this->json('GET', $this->commentAPI, $query, $this->header);
 
         $response
             ->assertStatus(200)
@@ -288,14 +286,13 @@ class CommentAPITest extends TestCase
         $project_user->save();
 
         //他の人のコメントを修正できるか
-        $query['comment_id'] = $this->comment->id;
         $query['content'] = 'change comment content';
 
-        $response = $this->json('PUT', $this->commentAPI, $query, []);
+        $response = $this->json('PUT', $this->accessCommentAPI, $query, []);
         $response->assertStatus(403);
 
         //他の人のコメントを削除できるか
-        $response = $this->json('DELETE', $this->commentAPI, $query, []);
+        $response = $this->json('DELETE', $this->accessCommentAPI, $query, []);
         $response->assertStatus(403);
     }
 }

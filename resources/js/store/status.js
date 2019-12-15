@@ -38,7 +38,7 @@ const mutations = {
 
 const actions = {
   async getStatus(context, data) {
-    const response = await axios.get('/api/status_list', data);
+    const response = await axios.get('/api/status', data);
     context.commit('initStatus', response.data.data)
   },
   async createStatus(context, data) {
@@ -46,19 +46,19 @@ const actions = {
     context.commit('addStatus', response.data.data)
   },
   async changeStatus(context, data) {
-    const response = await axios.put('/api/status', data);
+    const response = await axios.put('/api/status/' + data.status_id, data);
     context.commit('changeStatus', response.data.data)
   },
   async deleteStatus(context, data) {
-    await axios.delete('/api/status', data);
+    await axios.delete('/api/status/' + data.params.status_id, data);
     context.commit('deleteStatus', data.params.status_id)
   },
   async createTask(context, data) {
-    const response = await axios.post('/api/task', data);
+    const response = await axios.post('/api/tasks', data);
     context.commit('addTask', response.data.data)
   },
   async moveTask(context, data) {
-    await axios.post('/api/moveTask', data);
+    await axios.post('/api/move_task', data);
   },
 };
 

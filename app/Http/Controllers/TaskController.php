@@ -128,10 +128,7 @@ class TaskController extends Controller
 
         $task = Task::findOrFail($task_id);
 
-        $task_user = TasksUsers::where('task_id', '=', $task_id)
-            ->where('user_id', '=', Auth::id());
-
-        if ($task_user->delete() && $task->delete()) {
+        if ($task->delete()) {
             return response()->json([], 204);
         } else {
             return response()->json([

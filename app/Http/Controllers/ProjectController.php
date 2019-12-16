@@ -91,10 +91,7 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
-        $project_user = ProjectsUsers::where('project_id', '=', $project->id)
-            ->where('user_id', '=', Auth::id());
-
-        if ($project_user->delete() && $project->delete()) {
+        if ($project->delete()) {
             return response()->json([], 204);
         } else {
             return response()->json([

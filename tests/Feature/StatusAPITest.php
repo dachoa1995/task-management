@@ -112,7 +112,7 @@ class StatusAPITest extends TestCase
         $query = [
             'project_id' => $this->project->id,
             'name' => 'new name',
-            'order' => 'new order'
+            'order' => 4
         ];
         //api_tokenがHeaderに含まらないとエラー
         $response = $this->json('PUT', $this->accessStatusAPI, $query, []);
@@ -165,13 +165,6 @@ class StatusAPITest extends TestCase
         //api_tokenがHeaderに含まらないとエラー出るか
         $response = $this->json('DELETE', $this->accessStatusAPI, [], []);
         $response->assertStatus(401);
-
-        //存在していないプロジェクトでのワークフローを削除すれば、エラー出るか
-        $query = [
-            'project_id' => 300,
-        ];
-        $response = $this->json('DELETE', $this->accessStatusAPI, $query, $this->header);
-        $response->assertStatus(403);
 
         //プロジェクトで存在していないワークフローを削除すれば、エラー出るか
         $query['project_id'] = $this->project->id;

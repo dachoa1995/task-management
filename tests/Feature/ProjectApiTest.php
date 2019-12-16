@@ -118,7 +118,7 @@ class ProjectApiTest extends TestCase
 
         //存在していないプロジェクトを取得すれば、エラー出るか
         $response = $this->json('GET', $this->projectAPI . '/300', [], $this->header);
-        $response->assertStatus(403);
+        $response->assertStatus(404);
     }
 
     /*
@@ -162,7 +162,7 @@ class ProjectApiTest extends TestCase
 
         //存在していないプロジェクトを編集すれば、エラー出るか
         $response = $this->json('PUT', $this->projectAPI . '/300', $query, $this->header);
-        $response->assertStatus(403);
+        $response->assertStatus(404);
     }
 
     /*
@@ -258,7 +258,7 @@ class ProjectApiTest extends TestCase
 
         //存在していないプロジェクトを削除できるか
         $response = $this->json('DELETE', $this->projectAPI . '/300', [], $this->header);
-        $response->assertStatus(403);
+        $response->assertStatus(404);
 
         // 自分のプロジェクトを削除できるか。
         $response = $this->json('DELETE', $this->accessProjectAPI, [], $this->header);

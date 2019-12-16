@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Gate;
 
 class StatusController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Status::class);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -48,13 +53,11 @@ class StatusController extends Controller
         ], 500);
     }
 
-    public function update($status_id, Request $request)
+    public function update(Status $status, Request $request)
     {
         $project_id = $request->input('project_id');
 
         Gate::authorize('access-project', [$project_id]);
-
-        $status = Status::findOrFail($status_id);
 
         $status->project_id = $project_id;
         $status->name = $request->input('name');
@@ -74,12 +77,8 @@ class StatusController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($status_id, Request $request)
+    public function destroy(Status $status)
     {
-        Gate::authorize('access-project', [$request->input('project_id')]);
-
-        $status = Status::findOrFail($status_id);
-
         if ($status->delete()) {
             return response()->json([], 204);
         } else {

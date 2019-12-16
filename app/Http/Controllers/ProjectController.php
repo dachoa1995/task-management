@@ -15,6 +15,11 @@ use Illuminate\Support\Facades\Gate;
 
 class ProjectController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Project::class);
+    }
+
     /**
      * プロジェクト一覧を取得
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
@@ -54,12 +59,8 @@ class ProjectController extends Controller
         ], 500);
     }
 
-    public function update($project_id, Request $request)
+    public function update(Project $project, Request $request)
     {
-        Gate::authorize('access-project', [$project_id]);
-
-        $project = Project::findOrFail($project_id);
-
         $project->name = $request->input('name');
         $project->description = $request->input('description');
 
@@ -73,32 +74,24 @@ class ProjectController extends Controller
     }
 
     /**
-     * @param $id
+     * @param  \App\Project  $project
      */
-    public function show($project_id)
+    public function show(Project $project)
     {
-        //$project_id = $request->input('project_id');
-
-        Gate::authorize('access-project', [$project_id]);
-
         $project = Project::with('projectsUsers.user:id,name,avatarURL')
-            ->where('id', '=', $project_id)
+            ->where('id', '=', $project->id)
             ->first();
 
         return new ProjectResource($project);
     }
 
     /**
-     * @param $id
+     * @param  \App\Project  $project
      * @return ProjectResource|\Illuminate\Http\JsonResponse
      */
-    public function destroy($project_id)
+    public function destroy(Project $project)
     {
-        Gate::authorize('access-project', [$project_id]);
-
-        $project = Project::findOrFail($project_id);
-
-        $project_user = ProjectsUsers::where('project_id', '=', $project_id)
+        $project_user = ProjectsUsers::where('project_id', '=', $project->id)
             ->where('user_id', '=', Auth::id());
 
         if ($project_user->delete() && $project->delete()) {

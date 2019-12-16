@@ -158,12 +158,9 @@ class TaskController extends Controller
         }
 
         //check if user exist
-        $user = User::where(['email' => $email])->first();
-        if (is_null($user)) {
-            $user = User::firstOrCreate([
-                'email' => $email,
-            ]);
-        }
+        $user = User::firstOrCreate([
+            'email' => $email,
+        ]);
 
         // check if user is assigned
         $isAssigned = TasksUsers::where(['task_id' => $task_id, 'user_id' => $user->id])->exists();

@@ -71,7 +71,7 @@ class StatusAPITest extends TestCase
             'order' => 2,
         ];
         $response = $this->json('POST', $this->statusAPI, $status_data, $this->header);
-        $response->assertStatus(403);
+        $response->assertStatus(404);
 
         // テストプロジェクトワークフローを作成
         $status_data['project_id'] = $this->project->id;
@@ -110,7 +110,6 @@ class StatusAPITest extends TestCase
     */
     public function testIfChangeStatus() {
         $query = [
-            'project_id' => $this->project->id,
             'name' => 'new name',
             'order' => 4
         ];
@@ -136,17 +135,10 @@ class StatusAPITest extends TestCase
 
         //プロジェクトでのワークフローは編集して、保存されたか
         $status = Status::all()->last();
-        $this->assertEquals($query['project_id'], $status->project_id);
         $this->assertEquals($query['name'], $status->name);
         $this->assertEquals($query['order'], $status->order);
 
-        //存在していないプロジェクトでのワークフローを編集すれば、エラー出るか
-        $query['project_id'] = 300;
-        $response = $this->json('PUT', $this->accessStatusAPI, $query, $this->header);
-        $response->assertStatus(403);
-
         //プロジェクトで存在していないワークフローを編集すれば、エラー出るか
-        $query['project_id'] = $this->project->id;
         $response = $this->json('PUT', $this->statusAPI . '/300', $query, $this->header);
         $response->assertStatus(404);
     }
@@ -198,7 +190,7 @@ class StatusAPITest extends TestCase
             'project_id' => 300,
         ];
         $response = $this->json('GET', $this->statusAPI, $query, $this->header);
-        $response->assertStatus(403);
+        $response->assertStatus(404);
 
         //もう一つのワークフローを作成
         $status2 = new Status();
@@ -266,7 +258,7 @@ class StatusAPITest extends TestCase
             'order' => 2,
         ];
         $response = $this->json('POST', $this->statusAPI, $status_data, $header);
-        $response->assertStatus(403);
+        $response->assertStatus(404);
 
         //他の人のプロジェクトのワークフローを編集できるか
         $query['name'] = 'new name';
@@ -280,6 +272,6 @@ class StatusAPITest extends TestCase
 
         //他の人のプロジェクトのワークフロー一覧を取得できるか
         $response = $this->json('GET', $this->statusAPI, $query, $header);
-        $response->assertStatus(403);
+        $response->assertStatus(404);
     }
 }

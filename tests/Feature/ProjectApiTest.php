@@ -183,13 +183,12 @@ class ProjectApiTest extends TestCase
         //api_tokenがHeaderに含まらないとエラー出るか
         $query = [
             'email' => $another_user->email,
-            'project_id' => $this->project->id
         ];
-        $response = $this->json('POST', $this->assignProjectAPI, $query, []);
+        $response = $this->json('POST', $this->assignProjectAPI . '/' . $this->project->id, $query, []);
         $response->assertStatus(401);
 
         //プロジェクトに担当者アサインする
-        $response = $this->json('POST', $this->assignProjectAPI, $query, $this->header);
+        $response = $this->json('POST', $this->assignProjectAPI . '/' . $this->project->id, $query, $this->header);
 
         //サーパーから返したレスポンスの形式があっているか
         $response->assertStatus(204);
@@ -236,9 +235,8 @@ class ProjectApiTest extends TestCase
         $this->assertEquals($query['description'], $project->description);
 
         //存在していないプロジェクトに担当者アサインできるか
-        $query['project_id'] = 300;
-        $response = $this->json('POST', $this->assignProjectAPI, $query, $this->header);
-        $response->assertStatus(403);
+        $response = $this->json('POST', $this->assignProjectAPI . '/300', $query, $this->header);
+        $response->assertStatus(404);
     }
 
     /*
@@ -374,8 +372,7 @@ class ProjectApiTest extends TestCase
 
         //他の人のプロジェクトを担当者アサインすれば、エラー出るか
         $query['user_id'] = $this->user->id;
-        $query['project_id'] = $this->project->id;
-        $response = $this->json('POST', $this->assignProjectAPI, $query, $header);
+        $response = $this->json('POST', $this->assignProjectAPI . '/' . $this->project->id, $query, $header);
         $response->assertStatus(403);
     }
 }

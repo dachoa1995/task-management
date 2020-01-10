@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\User;
 use App\Status;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class StatusPolicy

@@ -2273,7 +2273,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       form: {
-        project_id: '',
+        zd: '',
         task_id: '',
         email: ''
       },
@@ -100665,7 +100665,7 @@ var actions = {
           switch (_context2.prev = _context2.next) {
             case 0:
               _context2.next = 2;
-              return axios.get('/api/user');
+              return axios.get('/user');
 
             case 2:
               response = _context2.sent;
@@ -100799,7 +100799,7 @@ var actions = {
           switch (_context2.prev = _context2.next) {
             case 0:
               _context2.next = 2;
-              return axios.post('/api/comment', data.form);
+              return axios.post('/api/comments', data.form);
 
             case 2:
               response = _context2.sent;
@@ -100960,7 +100960,7 @@ var actions = {
           switch (_context2.prev = _context2.next) {
             case 0:
               _context2.next = 2;
-              return axios.post('/api/project', data);
+              return axios.post('/api/projects', data);
 
             case 2:
               response = _context2.sent;
@@ -100989,7 +100989,7 @@ var actions = {
           switch (_context3.prev = _context3.next) {
             case 0:
               _context3.next = 2;
-              return axios["delete"]('/api/project', data);
+              return axios["delete"]('/api/projects/' + data.params.project_id, []);
 
             case 2:
               context.commit('deleteProject', data.params.project_id);
@@ -101017,7 +101017,7 @@ var actions = {
           switch (_context4.prev = _context4.next) {
             case 0:
               _context4.next = 2;
-              return axios.put('/api/project', data);
+              return axios.put('/api/projects/' + data.project_id, data);
 
             case 2:
               context.commit('changeProject', data);
@@ -101046,7 +101046,7 @@ var actions = {
           switch (_context5.prev = _context5.next) {
             case 0:
               _context5.next = 2;
-              return axios.get('/api/project', data);
+              return axios.get('/api/projects/' + data.params.project_id, []);
 
             case 2:
               response = _context5.sent;
@@ -101075,7 +101075,7 @@ var actions = {
           switch (_context6.prev = _context6.next) {
             case 0:
               _context6.next = 2;
-              return axios.post('/api/assign_project', data);
+              return axios.post('/api/assign_project/' + data.project_id, data);
 
             case 2:
             case "end":
@@ -101171,7 +101171,7 @@ var actions = {
           switch (_context.prev = _context.next) {
             case 0:
               _context.next = 2;
-              return axios.get('/api/status_list', data);
+              return axios.get('/api/status', data);
 
             case 2:
               response = _context.sent;
@@ -101231,7 +101231,7 @@ var actions = {
           switch (_context3.prev = _context3.next) {
             case 0:
               _context3.next = 2;
-              return axios.put('/api/status', data);
+              return axios.put('/api/status/' + data.status_id, data);
 
             case 2:
               response = _context3.sent;
@@ -101260,7 +101260,7 @@ var actions = {
           switch (_context4.prev = _context4.next) {
             case 0:
               _context4.next = 2;
-              return axios["delete"]('/api/status', data);
+              return axios["delete"]('/api/status/' + data.params.status_id, data);
 
             case 2:
               context.commit('deleteStatus', data.params.status_id);
@@ -101289,7 +101289,7 @@ var actions = {
           switch (_context5.prev = _context5.next) {
             case 0:
               _context5.next = 2;
-              return axios.post('/api/task', data);
+              return axios.post('/api/tasks', data);
 
             case 2:
               response = _context5.sent;
@@ -101318,7 +101318,7 @@ var actions = {
           switch (_context6.prev = _context6.next) {
             case 0:
               _context6.next = 2;
-              return axios.post('/api/moveTask', data);
+              return axios.post('/api/move/' + data.task_id + '/' + data.change_to_status_id, data);
 
             case 2:
             case "end":
@@ -101391,7 +101391,7 @@ var actions = {
           switch (_context.prev = _context.next) {
             case 0:
               _context.next = 2;
-              return axios.get('/api/task', data);
+              return axios.get('/api/tasks/' + data.params.task_id, data);
 
             case 2:
               response = _context.sent;
@@ -101420,7 +101420,7 @@ var actions = {
           switch (_context2.prev = _context2.next) {
             case 0:
               _context2.next = 2;
-              return axios.post('/api/assign_task', data);
+              return axios.post('/api/assign_task/' + data.task_id, data);
 
             case 2:
             case "end":
@@ -101446,7 +101446,7 @@ var actions = {
           switch (_context3.prev = _context3.next) {
             case 0:
               _context3.next = 2;
-              return axios.put('/api/task', data);
+              return axios.put('/api/tasks/' + data.task_id, data);
 
             case 2:
               response = _context3.sent;
@@ -101475,7 +101475,7 @@ var actions = {
           switch (_context4.prev = _context4.next) {
             case 0:
               _context4.next = 2;
-              return axios["delete"]('/api/task', data);
+              return axios["delete"]('/api/tasks/' + data.params.task_id, data);
 
             case 2:
             case "end":

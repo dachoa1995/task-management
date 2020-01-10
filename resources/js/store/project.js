@@ -50,7 +50,7 @@ const actions = {
     context.commit('initProject', response.data.data)
   },
   async assign(context, data) {
-    await axios.post('/api/assign_project', data);
+    await axios.post('/api/assign_project/' + data.project_id, data);
   },
 
 };

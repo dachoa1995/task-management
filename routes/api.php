@@ -1,8 +1,4 @@
 <?php
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,18 +10,20 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-// プロジェクトに担当者をアサインする
-Route::post('assign_project', 'ProjectController@assign');
+Route::middleware(['auth:api'])->group(function () {
+    // プロジェクトに担当者をアサインする
+    Route::post('assign_project/{project}', 'ProjectAssignController');
 
-// タスクに担当者をアサインする
-Route::post('assign_task', 'TaskController@assign');
+    // タスクに担当者をアサインする
+    Route::post('assign_task/{task}', 'TaskAssignController');
 
-// タスクに担当者をアサインする
-Route::post('move_task', 'TaskController@moveTask');
+    // ワークフロー間を移動
+    Route::post('move/{task}/{status}', 'MoveTaskController');
 
-Route::apiResources([
-    'projects' => 'ProjectController',
-    'status' => 'StatusController',
-    'tasks' => 'TaskController',
-    'comments' => 'CommentController'
-]);
+    Route::apiResources([
+        'projects' => 'ProjectController',
+        'status' => 'StatusController',
+        'tasks' => 'TaskController',
+        'comments' => 'CommentController'
+    ]);
+});

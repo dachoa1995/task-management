@@ -23,7 +23,7 @@ const actions = {
     context.commit('initTask', response.data.data)
   },
   async assign(context, data) {
-    await axios.post('/api/assign_task', data);
+    await axios.post('/api/assign_task/' + data.task_id, data);
   },
   async changeTask(context, data) {
     const response = await axios.put('/api/tasks/' + data.task_id, data);

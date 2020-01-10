@@ -134,7 +134,6 @@ class CommentAPITest extends TestCase
     public function testIfChangeComment()
     {
         $comment_content = [
-            'project_id' => $this->project->id,
             'content' => 'change comment content'
         ];
 
@@ -288,11 +287,11 @@ class CommentAPITest extends TestCase
         //他の人のコメントを修正できるか
         $query['content'] = 'change comment content';
 
-        $response = $this->json('PUT', $this->accessCommentAPI, $query, []);
+        $response = $this->json('PUT', $this->accessCommentAPI, $query, $header);
         $response->assertStatus(403);
 
         //他の人のコメントを削除できるか
-        $response = $this->json('DELETE', $this->accessCommentAPI, $query, []);
+        $response = $this->json('DELETE', $this->accessCommentAPI, $query, $header);
         $response->assertStatus(403);
     }
 }

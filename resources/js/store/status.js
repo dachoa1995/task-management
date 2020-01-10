@@ -58,7 +58,7 @@ const actions = {
     context.commit('addTask', response.data.data)
   },
   async moveTask(context, data) {
-    await axios.post('/api/move_task', data);
+    await axios.post('/api/move/' + data.task_id + '/' + data.change_to_status_id, data);
   },
 };
 

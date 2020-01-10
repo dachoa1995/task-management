@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Project;
 use App\Status;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\Status as StatusResource;
 use Illuminate\Support\Facades\Gate;
 
@@ -55,11 +55,6 @@ class StatusController extends Controller
 
     public function update(Status $status, Request $request)
     {
-        $project_id = $request->input('project_id');
-
-        Gate::authorize('access-project', [$project_id]);
-
-        $status->project_id = $project_id;
         $status->name = $request->input('name');
         $status->order = $request->input('order');
 

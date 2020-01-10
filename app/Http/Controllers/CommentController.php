@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use DemeterChain\C;
 use Illuminate\Http\Request;
 use App\Task;
 use App\Comment;
@@ -12,6 +11,11 @@ use Illuminate\Support\Facades\Gate;
 
 class CommentController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Comment::class);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -63,18 +67,12 @@ class CommentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update($comment_id, Request $request)
+    public function update(Comment $comment, Request $request)
     {
-        Gate::authorize('access-project', [$request->input('project_id')]);
+        $comment->content = $request->input('content');
 
-        $update_comment = Comment::findOrFail($comment_id);
-
-        Gate::authorize('update-comment', [$update_comment]);
-
-        $update_comment->content = $request->input('content');
-
-        if ($update_comment->save()) {
-            return new CommentResource($update_comment);
+        if ($comment->save()) {
+            return new CommentResource($comment);
         }
 
         return response()->json([
@@ -85,14 +83,8 @@ class CommentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($comment_id, Request $request)
+    public function destroy(Comment $comment)
     {
-        Gate::authorize('access-project', [$request->input('project_id')]);
-
-        $comment = Comment::findOrFail($comment_id);
-
-        Gate::authorize('update-comment', [$comment]);
-
         if ($comment->delete()) {
             return response()->json([], 204);
         } else {

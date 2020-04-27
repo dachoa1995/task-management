@@ -19,18 +19,18 @@ const mutations = {
 
 const actions = {
   async getTask(context, data) {
-    const response = await axios.get('/api/task', data);
+    const response = await axios.get('/api/tasks/' + data.params.task_id, data);
     context.commit('initTask', response.data.data)
   },
   async assign(context, data) {
-    await axios.post('/api/assign_task', data);
+    await axios.post('/api/assign_task/' + data.task_id, data);
   },
   async changeTask(context, data) {
-    const response = await axios.put('/api/task', data);
+    const response = await axios.put('/api/tasks/' + data.task_id, data);
     context.commit('changeTask', response.data.data)
   },
   async deleteTask(context, data) {
-    await axios.delete('/api/task', data);
+    await axios.delete('/api/tasks/' + data.params.task_id, data);
   },
 };
 

@@ -1,8 +1,4 @@
 <?php
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,73 +10,20 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-// ログインユーザー
-Route::get('/user', function () {
-    return Auth::user();
-})->name('user');
+Route::middleware(['auth:api'])->group(function () {
+    // プロジェクトに担当者をアサインする
+    Route::post('assign_project/{project}', 'ProjectAssignController');
 
-// プロジェクト一覧を取得
-Route::middleware('auth:api')->get('projects', 'ProjectController@index');
+    // タスクに担当者をアサインする
+    Route::post('assign_task/{task}', 'TaskAssignController');
 
-// プロジェクト詳細を取得
-Route::middleware('auth:api')->get('project', 'ProjectController@show');
+    // ワークフロー間を移動
+    Route::post('move/{task}/{status}', 'MoveTaskController');
 
-// プロジェクトを投稿
-Route::middleware('auth:api')->post('project', 'ProjectController@store');
-
-// プロジェクトを更新
-Route::middleware('auth:api')->put('project', 'ProjectController@store');
-
-// プロジェクトを削除
-Route::middleware('auth:api')->delete('project', 'ProjectController@destroy');
-
-// プロジェクトに担当者をアサインする
-Route::middleware('auth:api')->post('assign_project', 'ProjectController@assign');
-
-
-// ワークフロー覧を取得
-Route::middleware('auth:api')->get('status_list', 'StatusController@index');
-
-// ワークフローを投稿
-Route::middleware('auth:api')->post('status', 'StatusController@store');
-
-// ワークフローを更新
-Route::middleware('auth:api')->put('status', 'StatusController@store');
-
-// ワークフローを削除
-Route::middleware('auth:api')->delete('status', 'StatusController@destroy');
-
-
-// タスクー覧を取得
-Route::middleware('auth:api')->get('tasks', 'TaskController@index');
-
-// タスク詳細を取得
-Route::middleware('auth:api')->get('task', 'TaskController@show');
-
-// タスクを投稿
-Route::middleware('auth:api')->post('task', 'TaskController@store');
-
-// タスクを更新
-Route::middleware('auth:api')->put('task', 'TaskController@store');
-
-// タスクを削除
-Route::middleware('auth:api')->delete('task', 'TaskController@destroy');
-
-// タスクに担当者をアサインする
-Route::middleware('auth:api')->post('assign_task', 'TaskController@assign');
-
-// タスクに担当者をアサインする
-Route::middleware('auth:api')->post('moveTask', 'TaskController@moveTask');
-
-
-// タスクでコメントー覧を取得
-Route::middleware('auth:api')->get('comments', 'CommentController@index');
-
-// タスクでコメントを投稿
-Route::middleware('auth:api')->post('comment', 'CommentController@store');
-
-// タスクでコメントを更新
-Route::middleware('auth:api')->put('comment', 'CommentController@update');
-
-// タスクでコメントを削除
-Route::middleware('auth:api')->delete('comment', 'CommentController@destroy');
+    Route::apiResources([
+        'projects' => 'ProjectController',
+        'status' => 'StatusController',
+        'tasks' => 'TaskController',
+        'comments' => 'CommentController'
+    ]);
+});

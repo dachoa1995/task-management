@@ -18,7 +18,7 @@ Vue.use(VueAuthenticate, {
 
   providers: {
     google: {
-      clientId: 'your google client ID',
+      clientId: '723569059770-uluu31hlfll07sil7meqa75up3ip0upr.apps.googleusercontent.com',
       redirectUri: 'http://local.task.com/auth/google/callback'
     }
   }

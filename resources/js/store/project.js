@@ -34,23 +34,23 @@ const actions = {
     context.commit('initProject', response.data.data)
   },
   async createProject(context, data) {
-    const response = await axios.post('/api/project', data);
+    const response = await axios.post('/api/projects', data);
     context.commit('addProject', response.data.data)
   },
   async deleteProject(context, data) {
-    await axios.delete('/api/project', data);
+    await axios.delete('/api/projects/' + data.params.project_id, []);
     context.commit('deleteProject', data.params.project_id)
   },
   async changeProject(context, data) {
-    await axios.put('/api/project', data);
+    await axios.put('/api/projects/' + data.project_id, data);
     context.commit('changeProject', data)
   },
   async getProjectDetail(context, data) {
-    const response = await axios.get('/api/project', data);
+    const response = await axios.get('/api/projects/' + data.params.project_id, []);
     context.commit('initProject', response.data.data)
   },
   async assign(context, data) {
-    await axios.post('/api/assign_project', data);
+    await axios.post('/api/assign_project/' + data.project_id, data);
   },
 
 };

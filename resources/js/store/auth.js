@@ -20,7 +20,7 @@ const actions = {
     context.commit('setUser', data)
   },
   async currentUser (context) {
-    const response = await axios.get('/api/user');
+    const response = await axios.get('/user');
     const user = response.data || null;
     context.commit('setUser', user)
   },

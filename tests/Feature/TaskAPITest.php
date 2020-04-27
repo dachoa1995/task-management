@@ -20,9 +20,9 @@ class TaskAPITest extends TestCase
     private $status;
     private $task;
     private $header;
-    private $taskAPI = '/api/task';
-    private $taskListAPI = '/api/tasks';
+    private $taskAPI = '/api/tasks';
     private $assignTaskAPI = '/api/assign_task';
+    private $accessTaskAPI = '';
 
     protected function setUp(): void
     {
@@ -60,6 +60,8 @@ class TaskAPITest extends TestCase
         $task_user->user_id = $this->user->id;
         $task_user->task_id = $this->task->id;
         $task_user->save();
+
+        $this->accessTaskAPI = $this->taskAPI . '/' . $this->task->id;
 
         $this->header = [
             'Authorization' => 'Bearer ' . $this->user->api_token,
@@ -119,13 +121,7 @@ class TaskAPITest extends TestCase
             'author_url' => 'https://github.com/dachoa1995'
         ]);
 
-        //プロジェクトが存在していない場合、エラーが出るか
-        $query['project_id'] = 300;
-        $response = $this->json('POST', $this->taskAPI, $query, $this->header);
-        $response->assertStatus(403);
-
         //ワークフローが存在していない場合、エラーが出るか
-        $query['project_id'] = $this->project->id;
         $query['status_id'] = 300;
         $response = $this->json('POST', $this->taskAPI, $query, $this->header);
         $response->assertStatus(404);
@@ -141,17 +137,12 @@ class TaskAPITest extends TestCase
     */
     public function testIfAccessTask()
     {
-        $query = [
-            'project_id' => $this->project->id,
-            'task_id' => $this->status->id,
-        ];
-
         //api_tokenがHeaderに含まらないとエラー
-        $response = $this->json('GET', $this->taskAPI, $query, []);
+        $response = $this->json('GET', $this->accessTaskAPI, [], []);
         $response->assertStatus(401);
 
         //自分のプロジェクトでタスクを取得できるか
-        $response = $this->json('GET', $this->taskAPI, $query, $this->header);
+        $response = $this->json('GET', $this->accessTaskAPI, [], $this->header);
 
         //サーパーから返したレスポンスの形式があっているか
         $response
@@ -167,15 +158,8 @@ class TaskAPITest extends TestCase
                 'author_url' => 'https://github.com/dachoa1995'
             ]);
 
-        //存在していないプロジェクトでタスクを取得すれば、エラー出るか
-        $query['project_id'] = 300;
-        $response = $this->json('GET', $this->taskAPI, $query, $this->header);
-        $response->assertStatus(403);
-
         //存在していないタスクを取得すれば、エラー出るか
-        $query['project_id'] = $this->project->id;
-        $query['task_id'] = 300;
-        $response = $this->json('GET', $this->taskAPI, $query, $this->header);
+        $response = $this->json('GET', $this->taskAPI . '/300', [], $this->header);
         $response->assertStatus(404);
     }
 
@@ -191,26 +175,23 @@ class TaskAPITest extends TestCase
     public function testIfChangeTask()
     {
         $query = [
-            'task_id' => $this->task->id,
-            'project_id' => $this->project->id,
-            'status_id' => $this->status->id,
             'name' => 'new name',
             'description' => 'new description',
             'deadline' => date('Y-m-d', strtotime('2020-10-10'))
         ];
 
         //api_tokenがHeaderに含まらないとエラー
-        $response = $this->json('PUT', $this->taskAPI, $query, []);
+        $response = $this->json('PUT', $this->accessTaskAPI, $query, []);
         $response->assertStatus(401);
 
         //自分のプロジェクトでのタスクを編集できるか
-        $response = $this->json('PUT', $this->taskAPI, $query, $this->header);
+        $response = $this->json('PUT', $this->accessTaskAPI, $query, $this->header);
 
         //サーパーから返したレスポンスの形式があっているか
         $response->assertStatus(200)
             ->assertJson([
                 'data' => [
-                    'status_id' => $query['status_id'],
+                    'status_id' => $this->status->id,
                     'name' => $query['name'],
                     'description' => $query['description'],
                     'deadline' => $query['deadline']
@@ -221,20 +202,12 @@ class TaskAPITest extends TestCase
 
         //プロジェクトでのタスクは編集して、保存されたか
         $task = Task::all()->last();
-        $this->assertEquals($query['status_id'], $task->status_id);
         $this->assertEquals($query['name'], $task->name);
         $this->assertEquals($query['description'], $task->description);
         $this->assertEquals($query['deadline'], $task->deadline);
 
-        //存在していないプロジェクトでのタスクを編集すれば、エラー出るか
-        $query['project_id'] = 300;
-        $response = $this->json('PUT', $this->taskAPI, $query, $this->header);
-        $response->assertStatus(403);
-
         //プロジェクトで存在していないタスクを編集すれば、エラー出るか
-        $query['project_id'] = $this->project->id;
-        $query['task_id'] = 300;
-        $response = $this->json('PUT', $this->taskAPI, $query, $this->header);
+        $response = $this->json('PUT', $this->taskAPI . '/300', $query, $this->header);
         $response->assertStatus(404);
     }
 
@@ -250,20 +223,15 @@ class TaskAPITest extends TestCase
     {
 
         //api_tokenがHeaderに含まらないとエラー出るか
-        $response = $this->json('DELETE', $this->taskAPI, [], []);
+        $response = $this->json('DELETE', $this->accessTaskAPI, [], []);
         $response->assertStatus(401);
 
         //存在していないタスクを削除できるか
-        $query = [
-            'task_id' => 300,
-            'project_id' => $this->project->id,
-        ];
-        $response = $this->json('DELETE', $this->taskAPI, $query, $this->header);
+        $response = $this->json('DELETE', $this->taskAPI . '/300', [], $this->header);
         $response->assertStatus(404);
 
         //自分のタスクを削除できるか
-        $query['task_id'] = $this->task->id;
-        $response = $this->json('DELETE', $this->taskAPI, $query, $this->header);
+        $response = $this->json('DELETE', $this->accessTaskAPI, [], $this->header);
 
         //サーパーから返したレスポンスの形式があっているか
         $response->assertStatus(204);
@@ -290,15 +258,13 @@ class TaskAPITest extends TestCase
 
         //api_tokenがHeaderに含まらないとエラー出るか
         $query = [
-            'user_id' => $another_user->id,
-            'project_id' => $this->project->id,
-            'task_id' => $this->task->id,
+            'email' => $another_user->email,
         ];
-        $response = $this->json('POST', $this->assignTaskAPI, $query, []);
+        $response = $this->json('POST', $this->assignTaskAPI . '/' . $this->task->id, $query, []);
         $response->assertStatus(401);
 
         //タスクに担当者アサインする
-        $response = $this->json('POST', $this->assignTaskAPI, $query, $this->header);
+        $response = $this->json('POST', $this->assignTaskAPI . '/' . $this->task->id, $query, $this->header);
 
         //サーパーから返したレスポンスの形式があっているか
         $response->assertStatus(204);
@@ -309,8 +275,7 @@ class TaskAPITest extends TestCase
         $this->assertEquals($tasks_users['task_id'], $this->task->id);
 
         //存在していないタスクに担当者アサインできるか
-        $query['task_id'] = 300;
-        $response = $this->json('POST', $this->assignTaskAPI, $query, $this->header);
+        $response = $this->json('POST', $this->assignTaskAPI . '/300', $query, $this->header);
         $response->assertStatus(404);
     }
 
@@ -324,21 +289,14 @@ class TaskAPITest extends TestCase
     public function testIfGetTaskList()
     {
         //api_tokenがHeaderに含まらないとエラー出るか
-        $response = $this->json('GET', $this->taskListAPI, [], []);
+        $response = $this->json('GET', $this->taskAPI, [], []);
         $response->assertStatus(401);
 
-        //存在していないプロジェクトでのタスク一覧を取得すれば、エラー出るか
         $query = [
-            'project_id' => 300,
             'status_id' => $this->status->id,
         ];
-        $response = $this->json('GET', $this->taskListAPI, $query, $this->header);
-        $response->assertStatus(403);
 
-        //自分のプロジェクトでのタスク一覧を取得できるか
-        $query['project_id'] = $this->project->id;
-
-        $response = $this->json('GET', $this->taskListAPI, $query, $this->header);
+        $response = $this->json('GET', $this->taskAPI, $query, $this->header);
 
         $response
             ->assertStatus(200)
@@ -385,7 +343,6 @@ class TaskAPITest extends TestCase
             'Accept' => 'application/json',
         ];
         $query = [
-            'project_id' => $this->project->id,
             'status_id' => $this->status->id,
             'name' => '新しいタスク',
             'description' => 'タスクの説明文',
@@ -393,19 +350,19 @@ class TaskAPITest extends TestCase
         ];
 
         $response = $this->json('POST', $this->taskAPI, $query, $header);
-        $response->assertStatus(403);
+        $response->assertStatus(404);
 
         //他の人のプロジェクトのタスクを取得できるか
         $query['task_id'] = $this->task->id;
-        $response = $this->json('GET', $this->taskAPI, $query, $header);
+        $response = $this->json('GET', $this->accessTaskAPI, $query, $header);
         $response->assertStatus(403);
 
         //他の人のプロジェクトのタスクを編集できるか
-        $response = $this->json('PUT', $this->taskAPI, $query, $header);
+        $response = $this->json('PUT', $this->accessTaskAPI, $query, $header);
         $response->assertStatus(403);
 
         //他の人のプロジェクトのタスクを削除できるか
-        $response = $this->json('DELETE', $this->taskAPI, $query, $header);
+        $response = $this->json('DELETE', $this->accessTaskAPI, $query, $header);
         $response->assertStatus(403);
     }
 }

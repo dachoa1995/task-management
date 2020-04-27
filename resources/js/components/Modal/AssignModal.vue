@@ -44,7 +44,7 @@
     },
     data: () => ({
       form: {
-        project_id: '',
+        zd: '',
         task_id: '',
         email: '',
       },

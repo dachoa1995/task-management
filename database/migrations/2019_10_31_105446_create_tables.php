@@ -29,7 +29,7 @@ class CreateTables extends Migration
             $table->timestamps();
         });
 
-        Schema::create('projects_users', function (Blueprint $table) {
+        Schema::create('project_user', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('project_id');
@@ -67,7 +67,7 @@ class CreateTables extends Migration
             $table->timestamps();
         });
 
-        Schema::create('tasks_users', function (Blueprint $table) {
+        Schema::create('task_user', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('task_id');

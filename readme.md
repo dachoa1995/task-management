@@ -1,5 +1,3 @@
-デモ版：https://task-management-oss.000webhostapp.com/
-
 # Laravel＋Vue.jsでタスク管理システムの開発を行う、   
 基本的な機能は  
 - プロジェクトを作成して、チームを招待。（招待されたユーザーしかアクセスできない）  

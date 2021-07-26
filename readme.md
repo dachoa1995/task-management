@@ -9,6 +9,11 @@
 - プロジェクト一覧管理  
 - メール通知「招待された・アサインされた場合」  
 
+# ワイヤーフレーム
+![ワイヤーフレーム](https://user-images.githubusercontent.com/40752726/66911449-7ead2280-f04b-11e9-9160-5960c63f1767.png)
+
+
+
 # 開発環境構築の手順
 構築の手順は[Wiki](https://github.com/dachoa1995/task-management/wiki/%E9%96%8B%E7%99%BA%E7%92%B0%E5%A2%83%E6%A7%8B%E7%AF%89%E3%81%AE%E6%89%8B%E9%A0%86)で書いてありますので、参考してください。
 
